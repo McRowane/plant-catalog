@@ -643,13 +643,14 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     {id:'other',     label:'Other',                ph:'Text, Discord, Palmstreet… tell me how', type:'text', ac:'off'},
   ];
 
+  // Inquiry lines: "[0011] - Chantrieri Pink"; corm lots are marked so they don't clash with plant numbers.
   function itemLine(i){
     const r = resolve(i);
-    if(!r) return `${i.k[0]==='p' ? 'SKU' : 'Corm lot'} ${i.k.slice(2)}`;
+    if(!r) return `[${i.k[0]==='p' ? '' : 'Corm '}${i.k.slice(2)}]`;
     const {kind, x} = r;
     return kind==='plant'
-      ? `SKU ${x.sku}: ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}`
-      : `Corm lot ${x.lot}: ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
+      ? `[${x.sku}] - ${x.cultivar}${x.var?' '+x.var:''}`
+      : `[Corm ${x.lot}] - ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
   }
 
   // items: the shared inquiry list, or a one-off list from "Ask about just this plant".
