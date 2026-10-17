@@ -182,6 +182,7 @@ main .wrap{padding-block:14px 40px}
 .listbar span{flex:1;font-weight:700;font-size:.9rem;line-height:1.2}
 .listbar .btn{padding:10px 16px;border-radius:999px;white-space:nowrap}
 body.has-list main .wrap{padding-bottom:110px}
+body:has(.scrim:not([hidden])) .listbar{display:none}
 .sheet .lead{margin:6px 0 4px;font-size:.88rem;color:var(--muted)}
 .sheet h4{font:700 .95rem/1.2 var(--f-display);margin:18px 0 6px}
 .li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
@@ -202,6 +203,32 @@ body.has-list main .wrap{padding-bottom:110px}
 .channels button{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:11px 8px;font-weight:700;cursor:pointer}
 .channels button[aria-pressed="true"]{border:2px solid var(--accent);color:var(--accent);padding:10px 7px}
 .linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:.84rem;padding:6px 0;justify-self:center}
+
+.sheet form.inq{display:block}
+.picked{margin:6px 0 2px;padding:4px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.picked:empty{display:none}
+.picked .lead{margin:8px 0}
+.pickedlbl{margin:8px 0 0;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.contacts{display:grid;gap:8px}
+.copt{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:2px 12px}
+.copt.on{border-color:var(--leaf);box-shadow:inset 3px 0 0 var(--leaf)}
+.ctoggle{display:flex;align-items:center;gap:10px;padding:10px 0;font-weight:700;cursor:pointer}
+.ctoggle input{width:20px;height:20px;accent-color:var(--leaf);flex:none}
+.copt > input{width:100%;margin:0 0 10px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:16px}
+.field.big .q{font:700 .98rem/1.3 var(--f-display);color:var(--fg)}
+.field.big textarea{min-height:110px}
+.trap{position:absolute!important;left:-10000px!important;width:1px;height:1px;opacity:0}
+.formerr{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:var(--hold-soft);color:var(--hold);font-size:.88rem}
+.inq > .btn{width:100%;margin-top:14px}
+.lead.small{font-size:.8rem;text-align:center;margin-top:8px}
+.fallback{display:grid;gap:8px;margin-top:8px}
+.fallback textarea{min-height:120px;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:.86rem}
+.sent{text-align:center;padding:18px 4px 6px;display:grid;gap:10px;justify-items:center}
+.sent .tick{width:56px;height:56px;border-radius:50%;background:var(--leaf-soft);color:var(--leaf);display:grid;place-items:center;font-size:1.6rem;font-weight:700}
+.sent h3{margin:0}
+.sentlist{list-style:none;margin:4px 0 6px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;text-align:left;font-size:.86rem;width:100%}
+.sentlist li{padding:3px 0}
+.sent .btn{width:100%}
 
 /* Desktop: same page, wider layout. Phones keep the layout above. */
 @media (min-width:1024px){
@@ -585,25 +612,7 @@ body.has-list main .wrap{padding-bottom:110px}
     actions.append(askBtn);
     s.append(actions);
 
-    const ask = el('div','ask'); ask.hidden = true;
-    const msg = kind==='plant'
-      ? `Hi! Is SKU ${x.sku} (${x.cultivar}${x.var?' '+x.var:''}${x.stage?', '+x.stage:''}) still available? I'd like to know the price and shipping.`
-      : `Hi! Is corm lot ${x.lot} (${x.item}) still available? I'd like to know the price and shipping for ${x.qty>1?'some of them':'it'}.`;
-    const ta = el('textarea'); ta.id='ask-msg'; ta.value = msg; ta.setAttribute('aria-label','Message');
-    const copy = el('button','btn ghost','Copy message'); copy.type='button';
-    const toast = el('div','toast'); toast.setAttribute('aria-live','polite');
-    copy.onclick = () => {
-      const done = () => { toast.textContent = 'Copied. Paste it into your message.'; };
-      try{ navigator.clipboard.writeText(ta.value).then(done, () => { ta.focus(); ta.select(); toast.textContent='Selected. Copy it with your keyboard or long-press.'; }); }
-      catch(e){ ta.focus(); ta.select(); toast.textContent='Selected. Copy it with your keyboard or long-press.'; }
-    };
-    const c = (window.CATALOG_CONFIG && window.CATALOG_CONFIG.contact) || state.data.contact || {};
-    ask.append(el('p',null, c.how || 'Copy this message and send it to the seller where you found this catalog.'), ta, copy);
-    if(c.url){ const a=el('a','btn', c.label || 'Open messages'); a.href=c.url; a.target='_blank'; a.rel='noopener'; ask.append(a); }
-    if(c.text){ ask.append(el('p',null,c.text)); }
-    ask.append(toast);
-    askBtn.onclick = () => { ask.hidden = false; askBtn.hidden = true; ta.focus(); };
-    s.append(ask);
+    askBtn.onclick = () => openList([{k: keyOf(kind, x), qty: 1}]);
 
     const close = el('button','btn ghost','Close'); close.type='button'; close.style.marginTop='10px'; close.style.width='100%'; close.onclick = closeSheet;
     s.append(close);
@@ -621,118 +630,177 @@ body.has-list main .wrap{padding-bottom:110px}
     bar.replaceChildren(el('span', null, `Inquiry list · ${n}`), b);
   }
 
-  function channels(){
-    const ch = (window.CATALOG_CONFIG && window.CATALOG_CONFIG.channels) || {};
-    const out = [];
-    if(ch.messenger) out.push({id:'messenger', label:'Messenger', url:ch.messenger});
-    if(ch.instagram) out.push({id:'instagram', label:'Instagram', url:'https://ig.me/m/' + encodeURIComponent(String(ch.instagram).replace(/^@/,''))});
-    if(ch.email) out.push({id:'email', label:'Email', email:ch.email});
-    return out;
-  }
   function copyText(text, ta){
     try{ if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(()=>true, ()=>fallbackCopy(ta)); }catch(e){}
     return Promise.resolve(fallbackCopy(ta));
   }
   function fallbackCopy(ta){ try{ ta.focus(); ta.select(); return document.execCommand('copy'); }catch(e){ return false; } }
 
-  function openList(){
+  const CONTACTS = [
+    {id:'facebook',  label:'Facebook / Messenger', ph:'Your Facebook name or profile link', type:'text', ac:'off'},
+    {id:'instagram', label:'Instagram',            ph:'@yourhandle',                        type:'text', ac:'off'},
+    {id:'email',     label:'Email',                ph:'you@example.com',                    type:'email', ac:'email'},
+    {id:'other',     label:'Other',                ph:'Text, Discord, Palmstreet… tell me how', type:'text', ac:'off'},
+  ];
+
+  function itemLine(i){
+    const r = resolve(i);
+    if(!r) return `${i.k[0]==='p' ? 'SKU' : 'Corm lot'} ${i.k.slice(2)}`;
+    const {kind, x} = r;
+    return kind==='plant'
+      ? `SKU ${x.sku}: ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}`
+      : `Corm lot ${x.lot}: ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
+  }
+
+  // items: the shared inquiry list, or a one-off list from "Ask about just this plant".
+  function openList(oneOff){
     lastFocus = document.activeElement;
-    let saved = {}; try{ saved = JSON.parse(localStorage.getItem('pc.inq') || '{}') || {}; }catch(e){}
-    const chs = channels();
-    let cur = chs.find(c => c.id === saved.ch) || chs[0] || null;
+    const single = Array.isArray(oneOff);
+    let picks = single ? oneOff : list;
+    let saved = {}; try{ saved = JSON.parse(localStorage.getItem('pc.inq2') || '{}') || {}; }catch(e){}
+    const on = saved.on || {}, vals = saved.vals || {};
 
     const s = el('div','sheet'); s.setAttribute('role','dialog'); s.setAttribute('aria-modal','true'); s.setAttribute('aria-labelledby','inq-title');
-    const title = el('h3', null, 'Your inquiry list'); title.id = 'inq-title';
-    s.append(el('div','grab'), title,
-      el('p','lead','Send me what caught your eye. There’s no commitment: I’ll reply with availability, pricing and shipping.'));
-    const items = el('div'); s.append(items);
+    const title = el('h3', null, single ? 'Ask about this one' : 'Ready to inquire'); title.id = 'inq-title';
+    s.append(el('div','grab'), title);
 
+    const form = el('form','inq'); form.noValidate = true; s.append(form);
+
+    // What they picked
+    const items = el('div','picked'); form.append(items);
+
+    // 1. Contact
+    const cHead = el('h4', null, 'What’s the best way to contact you?');
+    const cSub = el('p','lead','Choose one or more, and I’ll reach out there.');
+    const cBox = el('div','contacts');
+    const inputs = {};
+    CONTACTS.forEach(c => {
+      const wrap = el('div','copt');
+      const lab = el('label','ctoggle');
+      const cb = el('input'); cb.type = 'checkbox'; cb.checked = !!on[c.id];
+      lab.append(cb, el('span', null, c.label));
+      const inp = el('input'); inp.type = c.type; inp.placeholder = c.ph; inp.autocomplete = c.ac; inp.value = vals[c.id] || '';
+      inp.setAttribute('aria-label', c.label); inp.hidden = !cb.checked;
+      if(c.id==='email'){ inp.inputMode = 'email'; inp.autocapitalize = 'off'; }
+      if(c.id==='instagram'){ inp.autocapitalize = 'off'; inp.spellcheck = false; }
+      cb.addEventListener('change', () => { inp.hidden = !cb.checked; wrap.classList.toggle('on', cb.checked); if(cb.checked) inp.focus(); persist(); validate(false); });
+      inp.addEventListener('input', () => { persist(); validate(false); });
+      wrap.classList.toggle('on', cb.checked);
+      wrap.append(lab, inp); cBox.append(wrap);
+      inputs[c.id] = {cb, inp};
+    });
+    form.append(cHead, cSub, cBox);
+
+    // 2. Name + inquiry
     const nameF = el('label','field'); nameF.append('Your name (optional)');
     const name = el('input'); name.autocomplete = 'name'; name.value = saved.name || ''; nameF.append(name);
-    const noteF = el('label','field'); noteF.append('Anything else? Questions, shipping ZIP, budget (optional)');
-    const note = el('textarea'); note.value = saved.note || ''; noteF.append(note);
-    s.append(nameF, noteF);
+    const msgF = el('label','field big'); msgF.append(el('span','q','Tell me what you’d like to know! 🌱'));
+    const msg = el('textarea');
+    msg.placeholder = 'Ask anything: price, size, photos of the actual plant, shipping to your area, bundle deals…';
+    msg.value = saved.msg || ''; msgF.append(msg);
+    // hidden spam trap: people never see or fill this
+    const trap = el('input'); trap.name = 'website'; trap.tabIndex = -1; trap.autocomplete = 'off';
+    trap.setAttribute('aria-hidden','true'); trap.className = 'trap';
+    form.append(nameF, msgF, trap);
 
-    const chHead = el('h4', null, 'How would you like to send it?');
-    const chBox = el('div','channels'); chBox.setAttribute('role','group'); chBox.setAttribute('aria-label','Send with');
-    chs.forEach(c => {
-      const b = el('button', null, c.label); b.type='button';
-      b.onclick = () => { cur = c; persist(); paintCh(); };
-      b.dataset.id = c.id; chBox.append(b);
-    });
-    if(chs.length) s.append(chHead, chBox);
-
-    const prevF = el('label','field'); prevF.append('Your message');
-    const preview = el('textarea','preview'); prevF.append(preview);
-    s.append(prevF);
-
-    const act = el('div','actions');
-    const send = el('a','btn'); send.rel = 'noopener';
-    const copy = el('button','btn ghost','Copy message'); copy.type='button';
-    const toast = el('div','toast'); toast.setAttribute('aria-live','polite');
-    act.append(send, copy, toast);
-    const clear = el('button','linkbtn','Clear my list'); clear.type='button';
+    const err = el('p','formerr'); err.setAttribute('role','alert'); err.hidden = true;
+    const send = el('button','btn','Send inquiry'); send.type = 'submit';
+    const note = el('p','lead small','No commitment, just a conversation. Your details only go to me.');
+    form.append(err, send, note);
+    const clear = el('button','linkbtn','Clear my list'); clear.type='button'; clear.hidden = single;
     const close = el('button','btn ghost','Keep browsing'); close.type='button'; close.style.marginTop='10px'; close.style.width='100%'; close.onclick = closeSheet;
-    s.append(act, close, clear);
+    s.append(close, clear);
 
-    function persist(){ try{ localStorage.setItem('pc.inq', JSON.stringify({name:name.value, note:note.value, ch: cur && cur.id})); }catch(e){} }
-    function line(i){
-      const r = resolve(i);
-      if(!r) return `• ${i.k[0]==='p' ? 'SKU' : 'Corm lot'} ${i.k.slice(2)}`;
-      const {kind, x} = r;
-      return kind==='plant'
-        ? `• SKU ${x.sku}: ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}`
-        : `• Corm lot ${x.lot}: ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
+    function persist(){
+      const o = {}, v = {};
+      CONTACTS.forEach(c => { o[c.id] = inputs[c.id].cb.checked; v[c.id] = inputs[c.id].inp.value; });
+      try{ localStorage.setItem('pc.inq2', JSON.stringify({on:o, vals:v, name:name.value, msg:msg.value})); }catch(e){}
     }
-    function message(){
-      const out = ['Hi! I’m interested in these from your Plant Catalog:', ...list.map(line), '', 'Could you let me know availability, pricing and shipping?'];
-      if(note.value.trim()) out.push('', note.value.trim());
-      if(name.value.trim()) out.push('', '— ' + name.value.trim());
-      return out.join('\n');
+    [name, msg].forEach(f => f.addEventListener('input', persist));
+
+    function contact(){
+      const out = {};
+      CONTACTS.forEach(c => { if(inputs[c.id].cb.checked && inputs[c.id].inp.value.trim()) out[c.id] = inputs[c.id].inp.value.trim(); });
+      return out;
     }
-    const subject = () => `Plant inquiry (${list.length} item${list.length===1?'':'s'})`;
-    function refresh(){
-      preview.value = message();
-      paintCh();
+    function validate(show){
+      const c = contact(); let m = '';
+      if(!Object.keys(c).length) m = 'Pick at least one way to reach you and fill it in.';
+      else if(c.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email)) m = 'That email address doesn’t look quite right.';
+      else if(!picks.length && !msg.value.trim()) m = 'Add a plant to your list or tell me what you’re looking for.';
+      if(show || !err.hidden){ err.textContent = m; err.hidden = !m; }
+      return !m;
     }
-    function paintCh(){
-      chBox.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(!!cur && b.dataset.id===cur.id)));
-      const empty = !list.length;
-      send.hidden = !cur || empty; copy.disabled = empty;
-      if(!cur) return;
-      if(cur.id==='email'){
-        send.textContent = 'Open email with my inquiry';
-        send.href = `mailto:${cur.email}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(preview.value)}`;
-        send.removeAttribute('target');
-      } else {
-        send.textContent = `Copy & open ${cur.label}`;
-        send.href = cur.url; send.target = '_blank';
-      }
+    function textVersion(){
+      const c = contact();
+      return ['Hi! I’m interested in these from your Plant Catalog:', ...picks.map(i => '• ' + itemLine(i)), '',
+        msg.value.trim() || 'Could you let me know availability, pricing and shipping?',
+        name.value.trim() ? '\n— ' + name.value.trim() : '',
+        Object.keys(c).length ? '\nReach me at: ' + Object.entries(c).map(([k,v]) => `${CONTACTS.find(x=>x.id===k).label}: ${v}`).join(', ') : ''
+      ].filter(Boolean).join('\n');
     }
-    send.onclick = () => {
-      if(cur && cur.id==='email'){ send.href = `mailto:${cur.email}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(preview.value)}`; toast.textContent = 'Your email app should open with the message ready to send.'; return; }
-      copyText(preview.value, preview).then(ok => {
-        toast.textContent = ok ? `Message copied. Paste it into ${cur ? cur.label : 'your message'} and send.` : 'Copy the message above, then paste it into the chat.';
-      });
-    };
-    copy.onclick = () => copyText(preview.value, preview).then(ok => { toast.textContent = ok ? 'Message copied.' : 'Selected. Copy it with your keyboard or long-press.'; });
-    clear.onclick = () => { list = []; saveList(); render(); drawItems(); refresh(); };
-    [name, note].forEach(f => f.addEventListener('input', () => { persist(); refresh(); }));
-    preview.addEventListener('input', () => { if(cur && cur.id==='email') send.href = `mailto:${cur.email}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(preview.value)}`; });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if(!validate(true)) return;
+      const CFGx = window.CATALOG_CONFIG || {};
+      const payload = {name: name.value.trim(), contact: contact(), items: picks.map(itemLine), message: msg.value.trim(), website: trap.value, page: 'catalog'};
+      send.disabled = true; send.textContent = 'Sending…';
+      fetch(CFGx.FEED_URL, {method:'POST', body: JSON.stringify(payload)})
+        .then(r => r.json())
+        .then(res => {
+          if(!res || !res.ok) throw new Error(res && res.error || 'failed');
+          done(payload);
+        })
+        .catch(errx => {
+          send.disabled = false; send.textContent = 'Try again';
+          err.hidden = false;
+          err.textContent = String(errx.message) === 'busy'
+            ? 'Lots of inquiries right now. Please try again in a minute.'
+            : 'That didn’t go through. Try again, or copy your inquiry and message me directly:';
+          if(String(errx.message) !== 'busy' && !form.querySelector('.fallback')){
+            const fb = el('div','fallback');
+            const ta = el('textarea'); ta.value = textVersion(); ta.readOnly = true; ta.setAttribute('aria-label','Your inquiry as text');
+            const cp = el('button','btn ghost','Copy my inquiry'); cp.type='button';
+            cp.onclick = () => copyText(ta.value, ta).then(ok => { cp.textContent = ok ? 'Copied' : 'Selected: copy it'; });
+            fb.append(ta, cp);
+            const ct = (CFGx.contact || {});
+            if(ct.url){ const a = el('a','btn ghost', ct.label || 'Message me'); a.href = ct.url; a.target='_blank'; a.rel='noopener'; fb.append(a); }
+            err.after(fb);
+          }
+        });
+    });
+
+    function done(p){
+      if(!single){ list = []; saveList(); render(); }
+      msg.value = ''; persist();
+      const ways = Object.keys(p.contact).map(k => CONTACTS.find(x=>x.id===k).label).join(' or ');
+      s.replaceChildren(el('div','grab'));
+      const ok = el('div','sent');
+      ok.append(el('div','tick','✓'), el('h3', null, 'Inquiry sent!'),
+        el('p','lead', `Thanks${p.name ? ', ' + p.name : ''}! I’ll get back to you on ${ways} soon.`));
+      if(p.items.length){ const ul = el('ul','sentlist'); p.items.forEach(t => ul.append(el('li', null, t))); ok.append(ul); }
+      const back = el('button','btn','Back to the catalog'); back.type='button'; back.onclick = closeSheet;
+      ok.append(back); s.append(ok); back.focus();
+    }
 
     function drawItems(){
       items.replaceChildren();
-      clear.hidden = !list.length;
-      if(!list.length){ items.append(el('p','empty','Your list is empty. Tap + next to anything you’d like to ask about.')); return; }
-      const wrap = el('div');
-      list.forEach(i => {
+      clear.hidden = single || !picks.length;
+      if(!picks.length){ items.append(el('p','lead', single ? '' : 'Your list is empty, but you can still ask about anything below.')); return; }
+      items.append(el('p','pickedlbl', `${picks.length} item${picks.length===1?'':'s'}`));
+      picks.forEach(i => {
         const r = resolve(i); const li = el('div','li');
         const x0 = el('button','x','×'); x0.type='button';
-        x0.onclick = () => { list = list.filter(j => j !== i); saveList(); render(); drawItems(); refresh(); };
+        x0.onclick = () => {
+          if(single){ picks = picks.filter(j => j !== i); }
+          else { list = list.filter(j => j !== i); picks = list; saveList(); render(); }
+          drawItems(); validate(false);
+        };
         if(!r){
           x0.setAttribute('aria-label','Remove');
           const m = el('div'); m.append(el('div','t', (i.k[0]==='p'?'SKU ':'Lot ') + i.k.slice(2)), el('div','warn','No longer listed'));
-          li.append(el('span'), m, x0); wrap.append(li); return;
+          li.append(el('span'), m, x0); items.append(li); return;
         }
         const {kind, x} = r;
         const nm = kind==='plant' ? `${x.cultivar}${x.var?' '+x.var:''}` : x.item;
@@ -748,16 +816,18 @@ body.has-list main .wrap{padding-bottom:110px}
           const q = el('div','qty'); const minus = el('button', null, '−'), plus = el('button', null, '+'), val = el('span');
           minus.type = plus.type = 'button'; minus.setAttribute('aria-label','Fewer corms'); plus.setAttribute('aria-label','More corms');
           const upd = () => { i.qty = Math.min(Math.max(1, i.qty||1), x.qty); val.textContent = `${i.qty} of ${x.qty} corms`; minus.disabled = i.qty<=1; plus.disabled = i.qty>=x.qty; };
-          minus.onclick = () => { i.qty--; upd(); saveList(); refresh(); };
-          plus.onclick = () => { i.qty++; upd(); saveList(); refresh(); };
+          minus.onclick = () => { i.qty--; upd(); if(!single) saveList(); };
+          plus.onclick = () => { i.qty++; upd(); if(!single) saveList(); };
           upd(); q.append(minus, val, plus); m.append(q);
         }
-        li.append(pic, m, x0); wrap.append(li);
+        li.append(pic, m, x0); items.append(li);
       });
-      items.append(wrap);
     }
-    drawItems(); refresh();
-    scrim.replaceChildren(s); scrim.hidden = false; close.focus();
+    clear.onclick = () => { list = []; picks = list; saveList(); render(); drawItems(); };
+    drawItems();
+    scrim.replaceChildren(s); scrim.hidden = false;
+    const firstOn = CONTACTS.find(c => inputs[c.id].cb.checked);
+    (firstOn ? inputs[firstOn.id].inp : inputs.facebook.cb).focus();
   }
 
   // ---- Wiring ----
