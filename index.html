@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plant Catalog</title>
+<meta name="description" content="Rare aroids and corms: browse what's available, see photos, and ask about any plant.">
+<meta name="theme-color" content="#f2f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1512" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Plant Catalog">
+<meta property="og:title" content="Plant Catalog">
+<meta property="og:description" content="Rare aroids and corms: see what's available right now.">
+<meta property="og:image" content="icons/icon-512.png">
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: phone-first specimen-label list under a sticky header; tabs switch Plants / Corms / Counts. */
+:root{
+  --bg:#f2f4ef; --surface:#ffffff; --sunk:#e7ebe4; --line:#d3dbd0;
+  --fg:#17211b; --muted:#5b685f; --leaf:#2c6e49; --leaf-soft:#dcebe1;
+  --accent:#a8326a; --accent-fg:#ffffff; --hold:#9a6a12; --hold-soft:#f5e9cf; --nfs-soft:#e9ece8;
+  --sw-green:#3f7d4f; --sw-albo:#fbfaf3; --sw-aurea:#e7c63d; --sw-pink:#ec8fb2; --sw-mint:#a9dcc2; --sw-purple:#7c4a86;
+  --shadow:0 1px 2px rgba(23,33,27,.06),0 4px 14px rgba(23,33,27,.06);
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1512; --surface:#18201b; --sunk:#1f2923; --line:#2c3831;
+  --fg:#e6ece6; --muted:#9aa89e; --leaf:#7cc79a; --leaf-soft:#1f3a2a;
+  --accent:#e87aa9; --accent-fg:#22101a; --hold:#e2b45a; --hold-soft:#3a2f17; --nfs-soft:#232c26;
+  --sw-green:#4f9a63; --sw-albo:#f2f1ea; --sw-aurea:#e2c040; --sw-pink:#ef9cbc; --sw-mint:#9fd8bb; --sw-purple:#a879b3;
+  --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1512; --surface:#18201b; --sunk:#1f2923; --line:#2c3831;
+  --fg:#e6ece6; --muted:#9aa89e; --leaf:#7cc79a; --leaf-soft:#1f3a2a;
+  --accent:#e87aa9; --accent-fg:#22101a; --hold:#e2b45a; --hold-soft:#3a2f17; --nfs-soft:#232c26;
+  --sw-green:#4f9a63; --sw-albo:#f2f1ea; --sw-aurea:#e2c040; --sw-pink:#ef9cbc; --sw-mint:#9fd8bb; --sw-purple:#a879b3;
+  --shadow:none; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:16px/1.45 var(--f-body);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{padding-block:14px 10px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font:700 1.65rem/1.05 var(--f-display);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.brand small{color:var(--muted);font-size:.8rem}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sunk);border-radius:10px;padding:3px;gap:3px}
+.tabs button{border:0;background:transparent;border-radius:8px;padding:8px 6px;font-weight:700;font-size:.92rem;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.tabs .n{font:500 .78rem var(--f-mono);color:var(--muted);margin-left:4px}
+.search{display:flex;gap:8px;align-items:center}
+.search input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:16px}
+.search input::placeholder{color:var(--muted)}
+.toggle{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:.85rem;color:var(--muted);cursor:pointer;user-select:none}
+.toggle input{width:18px;height:18px;accent-color:var(--leaf)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.84rem;white-space:nowrap;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+main .wrap{padding-block:14px 40px}
+.summary{color:var(--muted);font-size:.85rem;margin:0 0 10px}
+.group{margin-top:18px}
+.group h2{font:700 1.05rem/1.2 var(--f-display);margin:0 0 6px;display:flex;justify-content:space-between;gap:8px}
+.group h2 .c{font:500 .78rem var(--f-mono);color:var(--muted);align-self:center}
+.list{display:grid;gap:6px}
+.item{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 12px;cursor:pointer}
+.item:hover{border-color:var(--muted)}
+.item .mid{min-width:0}
+.item .t{font-weight:700;line-height:1.25}
+.item .m{font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}
+.item .r{display:grid;justify-items:end;gap:4px}
+.sku{font:500 .8rem var(--f-mono);letter-spacing:.02em;color:var(--muted)}
+.pill{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 8px}
+.pill.available{background:var(--leaf-soft);color:var(--leaf)}
+.pill.hold{background:var(--hold-soft);color:var(--hold)}
+.pill.nfs{background:var(--nfs-soft);color:var(--muted)}
+
+/* Variegation swatch: a leaf disc split between green and the variegation colour. */
+.sw{width:30px;height:30px;border-radius:50% 50% 50% 6px;border:1px solid var(--line);background:conic-gradient(var(--sw-green) 0 50%,var(--v,var(--sw-green)) 50% 100%);flex:none}
+.sw.speck{background:radial-gradient(circle at 30% 35%,var(--sw-albo) 0 3px,transparent 3.5px),radial-gradient(circle at 65% 60%,var(--sw-albo) 0 2.5px,transparent 3px),radial-gradient(circle at 45% 75%,var(--sw-albo) 0 2px,transparent 2.5px),var(--sw-green)}
+
+.empty{border:1px dashed var(--line);border-radius:12px;padding:24px 16px;text-align:center;color:var(--muted)}
+
+/* Counts */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font:700 1.5rem/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat span{font-size:.78rem;color:var(--muted)}
+.bars{display:grid;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.bar{display:grid;grid-template-columns:minmax(0,9.5rem) 1fr 2.2rem;align-items:center;gap:10px;font-size:.88rem}
+.bar .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .track{display:block;height:12px;background:var(--sunk);border-radius:6px;overflow:hidden}
+.bar .fill{display:block;height:100%;background:var(--leaf);border-radius:6px}
+.bar.corm .fill{background:var(--hold)}
+.bar .v{font:500 .82rem var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:.8rem;color:var(--muted);margin:6px 2px 0}
+
+/* Detail sheet */
+.scrim{position:fixed;inset:0;background:rgba(10,14,12,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--fg);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));max-height:88%;overflow:auto;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.sheet .head{display:flex;gap:12px;align-items:center}
+.sheet h3{font:700 1.4rem/1.15 var(--f-display);margin:0;text-wrap:balance}
+.label{margin:14px 0 0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.label div{display:grid;grid-template-columns:7.5rem 1fr;gap:8px;padding:8px 12px;border-top:1px solid var(--line);font-size:.92rem}
+.label div:first-child{border-top:0}
+.label dt{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;align-self:center}
+.label dd{margin:0}
+.actions{display:grid;gap:8px;margin-top:16px}
+.btn{display:flex;justify-content:center;align-items:center;gap:8px;border:0;border-radius:11px;padding:12px 14px;font-weight:700;text-decoration:none;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.ask{margin-top:14px;display:grid;gap:8px}
+.ask textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:16px;resize:vertical}
+.ask p{margin:0;font-size:.84rem;color:var(--muted)}
+.toast{font-size:.84rem;color:var(--leaf);min-height:1.2em}
+.thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--sunk);flex:none;display:block}
+.item.has-photo{grid-template-columns:56px 1fr auto}
+.cam{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:var(--muted)}
+.gallery{position:relative;margin:0 -18px 14px;margin:0 calc(-1 * max(18px,env(safe-area-inset-left,0px))) 14px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--sunk)}
+.strip::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:3/4;max-height:62vh;display:flex;align-items:center;justify-content:center;background:var(--sunk)}
+.slide img,.slide video{width:100%;height:100%;object-fit:contain;display:block;max-width:100%}
+.slide a{color:var(--fg);font-weight:700;text-align:center;padding:20px}
+.count{position:absolute;right:12px;bottom:10px;font:500 .78rem var(--f-mono);background:rgba(10,14,12,.62);color:#fff;border-radius:999px;padding:3px 9px}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:rgba(10,14,12,.5);color:#fff;font-size:1.2rem;line-height:36px;cursor:pointer}
+.gnav.prev{left:10px}.gnav.next{right:10px}
+@media (hover:none){.gnav{display:none}}
+.slide iframe{width:100%;height:100%;border:0;display:block}
+.vid{position:relative;width:100%;height:100%;border:0;padding:0;background:transparent;cursor:pointer}
+.vid img{width:100%;height:100%;object-fit:contain;display:block}
+.vid .play{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(10,14,12,.62);display:grid;place-items:center}
+.vid .play::before{content:"";margin-left:5px;border-style:solid;border-width:12px 0 12px 20px;border-color:transparent transparent transparent #fff}
+.cam .vbadge{font-weight:700}
+.live{display:inline-flex;align-items:center;gap:6px}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--leaf)}
+.live.stale::before{background:var(--hold)}
+.install{display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:.88rem}
+.install p{margin:0;flex:1}
+.install button{border:0;background:transparent;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:4px 6px}
+.install .btn{font-size:.85rem;padding:8px 12px;color:var(--accent-fg);background:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Plant Catalog</h1>
+      <small id="updated">Rare aroids and corms</small>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-plants" aria-selected="true" data-tab="plants">Plants<span class="n" id="n-plants"></span></button>
+      <button role="tab" id="tab-corms" aria-selected="false" data-tab="corms">Corms<span class="n" id="n-corms"></span></button>
+      <button role="tab" id="tab-counts" aria-selected="false" data-tab="counts">Counts</button>
+    </div>
+    <div class="search" id="searchrow">
+      <input id="q" type="search" placeholder="Search cultivar, var-type, SKU" autocomplete="off" enterkeyhint="search" aria-label="Search">
+      <label class="toggle"><input id="avail" type="checkbox" checked> Available</label>
+    </div>
+    <div class="chips" id="chips" aria-label="Filter by stage"></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="view">
+    <p class="summary">Loading the catalog…</p>
+  </div>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const state = {tab:'plants', q:'', avail:true, stage:'', data:null};
+  try{ const t = localStorage.getItem('pc.tab'); if(['plants','corms','counts'].includes(t)) state.tab = t; }catch(e){}
+  const h = location.hash.replace('#','');
+  if(['plants','corms','counts'].includes(h)) state.tab = h;
+
+  const STATUS = {available:'Available', hold:'On hold', nfs:'Not for sale'};
+  const STAGE_ORDER = ['Sprouting Corm','Lil Babyy','Pup','Offshoot','Teen','Parent','Cutting','Rehab'];
+
+  function swatch(v){
+    const s = (v||'').toLowerCase();
+    let c = null, speck = false;
+    if(/dappled|splash|starburst|spotted|mystery/.test(s)) speck = true;
+    else if(/pink|magenta|strawberry/.test(s)) c = 'var(--sw-pink)';
+    else if(/purple|mauve|cobra/.test(s)) c = 'var(--sw-purple)';
+    else if(/mint/.test(s)) c = 'var(--sw-mint)';
+    else if(/aurea|lemon|neon|sunset|orange|lava|mist/.test(s)) c = 'var(--sw-aurea)';
+    else if(/albo|variegated|platinum/.test(s)) c = 'var(--sw-albo)';
+    const el = document.createElement('span');
+    el.className = 'sw' + (speck ? ' speck' : '');
+    if(c) el.style.setProperty('--v', c);
+    el.setAttribute('aria-hidden','true');
+    return el;
+  }
+  function pill(st){ const p=document.createElement('span'); p.className='pill '+st; p.textContent=STATUS[st]; return p; }
+  function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+  function matches(hay, q){ return q.split(/\s+/).filter(Boolean).every(w => hay.includes(w)); }
+
+  // Drive-hosted media: files are shared "anyone with the link" by the uploader script.
+  const img1 = (id, w) => `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${w}`;
+  const img2 = (id, w) => `https://lh3.googleusercontent.com/d/${encodeURIComponent(id)}=w${w}`;
+  function driveImg(id, w, alt, eager){
+    const i = el('img'); i.alt = alt || ''; i.decoding = 'async'; i.loading = eager ? 'eager' : 'lazy';
+    i.referrerPolicy = 'no-referrer';
+    i.src = img1(id, w);
+    i.onerror = () => { if(!i.dataset.alt){ i.dataset.alt = '1'; i.src = img2(id, w); } else i.dispatchEvent(new CustomEvent('gone')); };
+    return i;
+  }
+  const cover = media => media.find(m => m.k==='photo') || media[0];
+
+  function fmtTime(iso){
+    const d = new Date(iso); if(isNaN(d)) return '';
+    const sameDay = d.toDateString() === new Date().toDateString();
+    return sameDay ? d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})
+                   : d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  }
+
+  function render(){
+    const d = state.data; if(!d) return;
+    document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab===state.tab)));
+    $('#searchrow').hidden = state.tab==='counts';
+    $('#chips').hidden = state.tab!=='plants';
+    const view = $('#view'); view.replaceChildren();
+    if(state.tab==='plants') renderPlants(view);
+    else if(state.tab==='corms') renderCorms(view);
+    else renderCounts(view);
+  }
+
+  function renderChips(){
+    const stages = [...new Set(state.data.plants.map(p=>p.stage).filter(Boolean))]
+      .sort((a,b)=>(STAGE_ORDER.indexOf(a)+99)%99-(STAGE_ORDER.indexOf(b)+99)%99);
+    const box = $('#chips'); box.replaceChildren();
+    ['All stages',...stages].forEach(s => {
+      const b = el('button','chip', s); b.type='button';
+      const val = s==='All stages' ? '' : s;
+      b.setAttribute('aria-pressed', String(state.stage===val));
+      b.onclick = () => { state.stage = val; renderChips(); render(); };
+      box.append(b);
+    });
+  }
+
+  function renderPlants(view){
+    const q = state.q.toLowerCase().trim();
+    let list = state.data.plants.filter(p =>
+      (!state.avail || p.status==='available') &&
+      (!state.stage || p.stage===state.stage) &&
+      (!q || matches([p.sku,p.cultivar,p.var,p.species,p.stage,STATUS[p.status]].join(' ').toLowerCase(), q)));
+    const rank = {available:0, hold:1, nfs:2};
+    list.sort((a,b)=> a.cultivar.localeCompare(b.cultivar) || a.var.localeCompare(b.var) || rank[a.status]-rank[b.status] || a.sku.localeCompare(b.sku));
+    view.append(el('p','summary', `${list.length} plant${list.length===1?'':'s'}` + (state.avail?' available':' in the collection') + (state.stage?` \u00b7 ${state.stage}`:'') + (q?` matching \u201c${state.q.trim()}\u201d`:'')));
+    if(!list.length){ view.append(emptyState()); return; }
+    const groups = new Map();
+    list.forEach(p => { if(!groups.has(p.cultivar)) groups.set(p.cultivar, []); groups.get(p.cultivar).push(p); });
+    groups.forEach((items, name) => {
+      const g = el('section','group');
+      const h2 = el('h2', null, name); h2.append(el('span','c', String(items.length)));
+      const ul = el('div','list');
+      items.forEach(p => {
+        const b = el('button','item'); b.type='button';
+        const mid = el('div','mid');
+        mid.append(el('div','t', p.var || 'Var-type not listed'), el('div','m', [p.stage, p.species && p.species!==p.cultivar ? p.species : ''].filter(Boolean).join(' \u00b7 ') || ' '));
+        const r = el('div','r'); r.append(el('span','sku','SKU '+p.sku), pill(p.status));
+        if(p.media && p.media.length){
+          const img = driveImg(cover(p.media).id, 160, ''); img.className = 'thumb';
+          img.addEventListener('gone', () => { img.replaceWith(swatch(p.var)); b.classList.remove('has-photo'); });
+          b.classList.add('has-photo');
+          const nP = p.media.filter(m=>m.k==='photo').length, nV = p.media.length - nP;
+          mid.append(el('span','cam', [nP ? nP+(nP===1?' photo':' photos') : '', nV ? nV+(nV===1?' video':' videos') : ''].filter(Boolean).join(' · ')));
+          b.append(img, mid, r);
+        } else b.append(swatch(p.var), mid, r);
+        b.onclick = () => openSheet('plant', p);
+        ul.append(b);
+      });
+      g.append(h2, ul); view.append(g);
+    });
+  }
+
+  function renderCorms(view){
+    const q = state.q.toLowerCase().trim();
+    let list = state.data.corms.filter(c =>
+      (!state.avail || c.status==='available') &&
+      (!q || matches([c.lot,c.item,c.var,c.cultivar,'corm',STATUS[c.status]].join(' ').toLowerCase(), q)));
+    list.sort((a,b)=> a.item.localeCompare(b.item) || a.lot.localeCompare(b.lot));
+    const total = list.filter(c=>c.status==='available').reduce((s,c)=>s+c.qty,0);
+    view.append(el('p','summary', `${list.length} lot${list.length===1?'':'s'}` + (state.avail?` \u00b7 ${total} corms available`:' in the collection') + (q?` matching \u201c${state.q.trim()}\u201d`:'')));
+    if(!list.length){ view.append(emptyState()); return; }
+    const ul = el('div','list');
+    list.forEach(c => {
+      const b = el('button','item'); b.type='button';
+      const mid = el('div','mid');
+      mid.append(el('div','t', c.item), el('div','m', [c.qty ? `${c.qty} corm${c.qty===1?'':'s'}` : '', c.var, c.harvest ? 'Harvested '+c.harvest : ''].filter(Boolean).join(' \u00b7 ')));
+      const r = el('div','r'); r.append(el('span','sku','Lot '+c.lot), pill(c.status));
+      b.append(swatch(c.var || c.item), mid, r);
+      b.onclick = () => openSheet('corm', c);
+      ul.append(b);
+    });
+    view.append(ul);
+  }
+
+  function emptyState(){
+    const e = el('div','empty');
+    e.append(el('div', null, 'Nothing matches that search.'));
+    if(state.avail){ const b=el('button','chip','Include items not for sale'); b.type='button'; b.style.marginTop='10px'; b.onclick=()=>{state.avail=false; $('#avail').checked=false; render();}; e.append(b); }
+    return e;
+  }
+
+  function bars(rows, cls){
+    const box = el('div','bars'); const max = Math.max(1,...rows.map(r=>r[1]));
+    rows.forEach(([label, v]) => {
+      const row = el('div','bar'+(cls?' '+cls:''));
+      const l = el('span','l',label); l.title = label;
+      const t = el('span','track'); const f = el('span','fill'); f.style.width = (v/max*100).toFixed(1)+'%'; t.append(f);
+      row.append(l, t, el('span','v', String(v)));
+      box.append(row);
+    });
+    return box;
+  }
+  function tally(arr, key, w){ const m=new Map(); arr.forEach(x=>{const k=key(x); if(k) m.set(k,(m.get(k)||0)+(w?w(x):1));}); return [...m].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])); }
+
+  function renderCounts(view){
+    const P = state.data.plants, C = state.data.corms;
+    const avail = P.filter(p=>p.status==='available');
+    const cAvail = C.filter(c=>c.status==='available');
+    const stats = el('div','stat-row');
+    [[avail.length,'plants available'],[cAvail.reduce((s,c)=>s+c.qty,0),'corms available'],[new Set(avail.map(p=>p.cultivar)).size,'cultivars for sale']]
+      .forEach(([n,l])=>{ const s=el('div','stat'); s.append(el('b',null,String(n)), el('span',null,l)); stats.append(s); });
+    view.append(stats);
+    const sec = (title, node, note) => { const g=el('section','group'); const h=el('h2',null,title); g.append(h,node); if(note) g.append(el('p','note',note)); view.append(g); };
+    sec('Available plants by cultivar', bars(tally(avail, p=>p.cultivar).slice(0,12)), 'Top 12 cultivars by plants available now.');
+    sec('Available plants by stage', bars(tally(avail, p=>p.stage||'Stage not listed').sort((a,b)=>(STAGE_ORDER.indexOf(a[0])+99)%99-(STAGE_ORDER.indexOf(b[0])+99)%99)));
+    sec('Available corms by cultivar', bars(tally(cAvail, c=>c.cultivar||c.item, c=>c.qty).slice(0,12), 'corm'), 'Counts are individual corms across all lots.');
+    sec('Whole collection by species', bars(tally(P, p=>p.species||null).slice(0,10)), 'Plants with a species recorded, including those not for sale.');
+  }
+
+  function gallery(media, alt){
+    const g = el('div','gallery'); const strip = el('div','strip');
+    strip.setAttribute('aria-label','Photos and videos');
+    media.forEach((m, i) => {
+      const s = el('div','slide');
+      if(m.k==='photo'){
+        const im = driveImg(m.id, 1600, `${alt}, photo ${i+1}`, i<2);
+        im.addEventListener('gone', () => im.replaceWith(el('span','note','This photo couldn’t load right now.')));
+        s.append(im);
+      }
+      else {
+        // Video: show its poster with a play button; load Drive's player only when tapped.
+        const b = el('button','vid'); b.type='button'; b.setAttribute('aria-label',`Play video of ${alt}`);
+        b.append(driveImg(m.id, 1000, '', i<2), el('span','play'));
+        b.onclick = () => {
+          const f = el('iframe'); f.src = `https://drive.google.com/file/d/${encodeURIComponent(m.id)}/preview`;
+          f.allow = 'autoplay; fullscreen'; f.allowFullscreen = true; f.title = `Video of ${alt}`;
+          b.replaceWith(f);
+        };
+        s.append(b);
+      }
+      strip.append(s);
+    });
+    const count = el('span','count', `1 / ${media.length}`);
+    strip.addEventListener('scroll', () => {
+      const i = Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth));
+      count.textContent = `${Math.min(media.length, i+1)} / ${media.length}`;
+    }, {passive:true});
+    g.append(strip);
+    if(media.length > 1){
+      g.append(count);
+      const prev = el('button','gnav prev','\u2039'); prev.type='button'; prev.setAttribute('aria-label','Previous photo');
+      const next = el('button','gnav next','\u203a'); next.type='button'; next.setAttribute('aria-label','Next photo');
+      prev.onclick = () => strip.scrollBy({left:-strip.clientWidth, behavior:'smooth'});
+      next.onclick = () => strip.scrollBy({left:strip.clientWidth, behavior:'smooth'});
+      g.append(prev, next);
+    }
+    return g;
+  }
+
+  // ---- Detail sheet ----
+  const scrim = $('#scrim'); let lastFocus = null;
+  function closeSheet(){ scrim.hidden = true; scrim.replaceChildren(); if(lastFocus) lastFocus.focus(); }
+  scrim.addEventListener('click', e => { if(e.target===scrim) closeSheet(); });
+  document.addEventListener('keydown', e => { if(e.key==='Escape' && !scrim.hidden) closeSheet(); });
+
+  function openSheet(kind, x){
+    lastFocus = document.activeElement;
+    const s = el('div','sheet'); s.setAttribute('role','dialog'); s.setAttribute('aria-modal','true');
+    s.append(el('div','grab'));
+    if(x.media && x.media.length) s.append(gallery(x.media, kind==='plant' ? x.cultivar+' '+x.var : x.item));
+    const head = el('div','head');
+    const title = kind==='plant' ? x.cultivar : x.item;
+    const ht = el('div'); ht.append(el('h3',null,title), el('div','sku', (kind==='plant'?'SKU ':'Lot ')+(kind==='plant'?x.sku:x.lot)));
+    head.append(swatch(x.var || title), ht);
+    s.append(head);
+    const dl = el('dl','label');
+    const rows = kind==='plant'
+      ? [['Status',STATUS[x.status]],['Var-type',x.var],['Stage',x.stage],['Species',x.species]]
+      : [['Status',STATUS[x.status]],['Quantity',x.qty?`${x.qty} corm${x.qty===1?'':'s'}`:''],['Var-type',x.var],['Cultivar',x.cultivar],['Harvested',x.harvest]];
+    rows.filter(r=>r[1]).forEach(([k,v])=>{ const d=el('div'); d.append(el('dt',null,k), el('dd',null,v)); dl.append(d); });
+    s.append(dl);
+
+    const actions = el('div','actions');
+    if(x.album){ const a=el('a','btn ghost','View photos'); a.href=x.album; a.target='_blank'; a.rel='noopener'; actions.append(a); }
+    const askBtn = el('button','btn','Ask about this '+(kind==='plant'?'plant':'lot')); askBtn.type='button';
+    actions.append(askBtn);
+    s.append(actions);
+
+    const ask = el('div','ask'); ask.hidden = true;
+    const msg = kind==='plant'
+      ? `Hi! Is SKU ${x.sku} (${x.cultivar}${x.var?' '+x.var:''}${x.stage?', '+x.stage:''}) still available? I'd like to know the price and shipping.`
+      : `Hi! Is corm lot ${x.lot} (${x.item}) still available? I'd like to know the price and shipping for ${x.qty>1?'some of them':'it'}.`;
+    const ta = el('textarea'); ta.id='ask-msg'; ta.value = msg; ta.setAttribute('aria-label','Message');
+    const copy = el('button','btn ghost','Copy message'); copy.type='button';
+    const toast = el('div','toast'); toast.setAttribute('aria-live','polite');
+    copy.onclick = () => {
+      const done = () => { toast.textContent = 'Copied. Paste it into your message.'; };
+      try{ navigator.clipboard.writeText(ta.value).then(done, () => { ta.focus(); ta.select(); toast.textContent='Selected. Copy it with your keyboard or long-press.'; }); }
+      catch(e){ ta.focus(); ta.select(); toast.textContent='Selected. Copy it with your keyboard or long-press.'; }
+    };
+    const c = (window.CATALOG_CONFIG && window.CATALOG_CONFIG.contact) || state.data.contact || {};
+    ask.append(el('p',null, c.how || 'Copy this message and send it to the seller where you found this catalog.'), ta, copy);
+    if(c.url){ const a=el('a','btn', c.label || 'Open messages'); a.href=c.url; a.target='_blank'; a.rel='noopener'; ask.append(a); }
+    if(c.text){ ask.append(el('p',null,c.text)); }
+    ask.append(toast);
+    askBtn.onclick = () => { ask.hidden = false; askBtn.hidden = true; ta.focus(); };
+    s.append(ask);
+
+    const close = el('button','btn ghost','Close'); close.type='button'; close.style.marginTop='10px'; close.style.width='100%'; close.onclick = closeSheet;
+    s.append(close);
+    scrim.replaceChildren(s); scrim.hidden = false; close.focus();
+  }
+
+  // ---- Wiring ----
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    state.tab = b.dataset.tab; try{ localStorage.setItem('pc.tab', state.tab); }catch(e){}
+    window.scrollTo(0,0); render();
+  });
+  $('#q').addEventListener('input', e => { state.q = e.target.value; render(); });
+  $('#avail').addEventListener('change', e => { state.avail = e.target.checked; render(); });
+
+  // ---- Live data ----
+  // Each visitor's copy runs on its own: it reads the feed, keeps the last copy on this
+  // device for instant start-up, and checks again whenever the app comes back on screen.
+  const CFG = window.CATALOG_CONFIG || {};
+  const CACHE_KEY = 'pc.catalog.v1';
+  let lastFetch = 0, loading = false;
+
+  function apply(d, fromCache){
+    if(!d || !Array.isArray(d.plants) || !Array.isArray(d.corms)) return false;
+    const first = !state.data;
+    state.data = d;
+    const u = $('#updated'); u.replaceChildren();
+    const live = el('span', 'live' + (fromCache ? ' stale' : ''), fromCache ? 'Updating…' : 'Live · updated ' + fmtTime(d.updated));
+    u.append(live);
+    $('#n-plants').textContent = d.plants.filter(p=>p.status==='available').length;
+    $('#n-corms').textContent = d.corms.filter(c=>c.status==='available').reduce((s,c)=>s+c.qty,0);
+    renderChips();
+    // Don't redraw underneath an open detail sheet; the next render picks up changes.
+    if(first || scrim.hidden) render();
+    return true;
+  }
+
+  function load(){
+    if(loading || !CFG.FEED_URL) return;
+    loading = true;
+    fetch(CFG.FEED_URL, {cache:'no-store'})
+      .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(d => {
+        if(apply(d, false)){ lastFetch = Date.now(); try{ localStorage.setItem(CACHE_KEY, JSON.stringify(d)); }catch(e){} }
+        else throw new Error('bad data');
+      })
+      .catch(() => {
+        if(state.data){ const u=$('#updated .live'); if(u){ u.className='live stale'; u.textContent='Offline · showing ' + fmtTime(state.data.updated); } }
+        else $('#view').replaceChildren(el('p','empty','The catalog could not load. Check your connection and pull down or reopen to try again.'));
+      })
+      .finally(() => { loading = false; });
+  }
+
+  try{ const saved = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); if(saved) apply(saved, true); }catch(e){}
+  if(!CFG.FEED_URL) $('#view').replaceChildren(el('p','empty','This catalog is being set up. Check back soon.'));
+  load();
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible' && Date.now()-lastFetch > 60000) load(); });
+  window.addEventListener('online', load);
+  setInterval(() => { if(document.visibilityState==='visible') load(); }, 5*60000);
+
+  // ---- Install hint ----
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  let dismissed = false; try{ dismissed = localStorage.getItem('pc.installHint') === 'no'; }catch(e){}
+  function hint(text, action){
+    if(standalone || dismissed || document.querySelector('.install')) return;
+    const box = el('div','install'); box.append(el('p', null, text));
+    if(action) box.append(action);
+    const x = el('button', null, '×'); x.type='button'; x.setAttribute('aria-label','Dismiss');
+    const w = el('div','wrap'); w.style.padding = '12px 0 0'; w.style.paddingLeft = w.style.paddingRight = ''; w.append(box);
+    x.onclick = () => { w.remove(); try{ localStorage.setItem('pc.installHint','no'); }catch(e){} };
+    box.append(x);
+    document.querySelector('main').prepend(w);
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    const b = el('button','btn','Install'); b.type='button';
+    b.onclick = () => { e.prompt(); const box = document.querySelector('.install'); if(box) box.parentNode.remove(); };
+    hint('Add Plant Catalog to your home screen for one-tap access.', b);
+  });
+  const iOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent);
+  if(iOS) setTimeout(() => hint('Add this to your home screen: tap Share, then “Add to Home Screen.”'), 2500);
+
+  if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
