@@ -775,11 +775,13 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     function done(p){
       if(!single){ list = []; saveList(); render(); }
       msg.value = ''; persist();
-      const ways = Object.keys(p.contact).map(k => CONTACTS.find(x=>x.id===k).label).join(' or ');
+      const keys = Object.keys(p.contact);
+      const ways = keys.indexOf('other') >= 0 ? 'using the contact you gave'
+        : 'on ' + keys.map(k => CONTACTS.find(x=>x.id===k).label).join(' or ');
       s.replaceChildren(el('div','grab'));
       const ok = el('div','sent');
       ok.append(el('div','tick','✓'), el('h3', null, 'Inquiry sent!'),
-        el('p','lead', `Thanks${p.name ? ', ' + p.name : ''}! I’ll get back to you on ${ways} soon.`));
+        el('p','lead', `Thanks${p.name ? ', ' + p.name : ''}! I’ll get back to you ${ways} soon.`));
       if(p.items.length){ const ul = el('ul','sentlist'); p.items.forEach(t => ul.append(el('li', null, t))); ok.append(ul); }
       const back = el('button','btn','Back to the catalog'); back.type='button'; back.onclick = closeSheet;
       ok.append(back); s.append(ok); back.focus();
