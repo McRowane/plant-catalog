@@ -154,6 +154,83 @@ main .wrap{padding-block:14px 40px}
 .install p{margin:0;flex:1}
 .install button{border:0;background:transparent;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:4px 6px}
 .install .btn{font-size:.85rem;padding:8px 12px;color:var(--accent-fg);background:var(--accent)}
+/* At a glance: headline numbers + one single-series bar list (leaf green, no legend needed). */
+#aside:empty{display:none}
+.glance{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;margin:0 0 14px}
+.glance h2{font:700 1rem/1.2 var(--f-display);margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.glance h2 button{font:inherit;font-size:.8rem;font-weight:400;color:var(--accent);background:none;border:0;cursor:pointer;padding:0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpi b{display:block;font:700 1.7rem/1 var(--f-display);font-variant-numeric:tabular-nums;color:var(--fg)}
+.kpi span{display:block;margin-top:4px;font-size:.76rem;line-height:1.2;color:var(--muted)}
+.toplist{display:grid;gap:2px}
+.toplist .lbl{font-size:.76rem;color:var(--muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.tbar{display:grid;grid-template-columns:minmax(0,8.5rem) 1fr 1.8rem;gap:10px;align-items:center;width:100%;border:0;background:none;padding:6px 4px;border-radius:6px;text-align:left;cursor:pointer;font-size:.86rem;color:var(--fg)}
+.tbar:hover{background:var(--sunk)}
+.tbar .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbar .tr{display:block;height:10px}
+.tbar .fl{display:block;height:100%;min-width:4px;background:var(--leaf);border-radius:0 4px 4px 0}
+.tbar .v{font:500 .8rem var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.chip .ct{font:500 .74rem var(--f-mono);opacity:.65;margin-left:5px}
+
+/* Inquiry list: + buttons, floating bar, list sheet */
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto}
+.row:not(.solo) .item{border-radius:12px 0 0 12px}
+.add{width:52px;border:1px solid var(--line);border-left:0;border-radius:0 12px 12px 0;background:var(--surface);color:var(--leaf);font:700 1.35rem/1 var(--f-body);cursor:pointer;display:grid;place-items:center}
+.add:hover{background:var(--leaf-soft)}
+.add[aria-pressed="true"]{background:var(--leaf);border-color:var(--leaf);color:var(--surface)}
+.listbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;align-items:center;gap:12px;width:min(440px,calc(100% - 32px));background:var(--fg);color:var(--bg);border-radius:999px;padding:7px 7px 7px 18px;box-shadow:0 8px 28px rgba(0,0,0,.28)}
+.listbar span{flex:1;font-weight:700;font-size:.9rem;line-height:1.2}
+.listbar .btn{padding:10px 16px;border-radius:999px;white-space:nowrap}
+body.has-list main .wrap{padding-bottom:110px}
+.sheet .lead{margin:6px 0 4px;font-size:.88rem;color:var(--muted)}
+.sheet h4{font:700 .95rem/1.2 var(--f-display);margin:18px 0 6px}
+.li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.li:first-child{border-top:0}
+.li img{width:44px;height:44px;border-radius:8px;object-fit:cover;display:block;background:var(--sunk)}
+.li .sw{justify-self:center}
+.li .t{font-weight:700;line-height:1.25}
+.li .m{font-size:.8rem;color:var(--muted)}
+.li .warn{font-size:.78rem;color:var(--hold);margin-top:2px}
+.li .x{border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:8px}
+.qty{display:inline-flex;align-items:center;gap:8px;margin-top:6px;font-size:.82rem}
+.qty button{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;font-size:1rem;line-height:1}
+.field{display:grid;gap:4px;margin-top:10px;font-size:.84rem;color:var(--muted)}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:16px}
+.field textarea{min-height:64px;resize:vertical}
+.field textarea.preview{min-height:150px;font-size:.88rem}
+.channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.channels button{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:11px 8px;font-weight:700;cursor:pointer}
+.channels button[aria-pressed="true"]{border:2px solid var(--accent);color:var(--accent);padding:10px 7px}
+.linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:.84rem;padding:6px 0;justify-self:center}
+
+/* Desktop: same page, wider layout. Phones keep the layout above. */
+@media (min-width:1024px){
+  .wrap{max-width:1260px;padding-left:32px;padding-right:32px}
+  header.top .wrap{grid-template-columns:auto minmax(300px,380px) minmax(0,1fr);align-items:center;column-gap:28px;padding-block:16px 12px}
+  .brand{flex-direction:column;align-items:flex-start;gap:4px;flex-wrap:nowrap}
+  h1{font-size:1.9rem}
+  .search{max-width:560px;justify-self:end;width:100%}
+  .chips{grid-column:1/-1;flex-wrap:wrap;overflow:visible}
+  .shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:32px;align-items:start;padding-top:22px}
+  #aside{position:sticky;top:calc(var(--hdr,150px) + 18px);max-height:calc(100vh - var(--hdr,150px) - 36px);overflow:auto}
+  #aside .glance{padding:18px 18px 12px}
+  .group{margin-top:22px}
+  .group:first-of-type{margin-top:6px}
+  .list{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+  .thumb{width:64px;height:64px}
+  .item.has-photo{grid-template-columns:64px 1fr auto}
+  .stat-row{max-width:720px}
+  .bars{max-width:720px}
+  .scrim{align-items:center;padding:32px}
+  .sheet{border-radius:18px;max-width:600px;max-height:calc(100vh - 64px);padding:24px 28px 26px}
+  .sheet .grab{display:none}
+  .sheet.has-gallery{max-width:1040px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:30px;align-content:start}
+  .sheet.has-gallery > *{grid-column:2}
+  .sheet.has-gallery > .gallery{grid-column:1;grid-row:1 / span 30;margin:0;border-radius:14px;overflow:hidden;align-self:start;position:sticky;top:0}
+  .slide{max-height:calc(100vh - 120px)}
+  .listbar{left:auto;right:32px;transform:none;width:400px}
+  body.has-list main .wrap{padding-bottom:40px}
+}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
 </style>
 </head>
@@ -179,8 +256,9 @@ main .wrap{padding-block:14px 40px}
 </header>
 
 <main>
-  <div class="wrap" id="view">
-    <p class="summary">Loading the catalog…</p>
+  <div class="wrap shell">
+    <aside id="aside" aria-label="What's available"></aside>
+    <div id="view"><p class="summary">Loading the catalog…</p></div>
   </div>
 </main>
 
@@ -235,6 +313,8 @@ main .wrap{padding-block:14px 40px}
                    : d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
   }
 
+  const mqWide = matchMedia('(min-width:1024px)');
+
   function render(){
     const d = state.data; if(!d) return;
     document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab===state.tab)));
@@ -244,19 +324,95 @@ main .wrap{padding-block:14px 40px}
     if(state.tab==='plants') renderPlants(view);
     else if(state.tab==='corms') renderCorms(view);
     else renderCounts(view);
+    $('#aside').replaceChildren(...(mqWide.matches ? [glance()] : []));
+    measureHeader();
   }
+  function setTab(t){
+    state.tab = t; try{ localStorage.setItem('pc.tab', t); }catch(e){}
+    window.scrollTo(0,0); render();
+  }
+  function measureHeader(){ document.documentElement.style.setProperty('--hdr', $('header.top').offsetHeight + 'px'); }
 
   function renderChips(){
-    const stages = [...new Set(state.data.plants.map(p=>p.stage).filter(Boolean))]
-      .sort((a,b)=>(STAGE_ORDER.indexOf(a)+99)%99-(STAGE_ORDER.indexOf(b)+99)%99);
+    const pool = state.data.plants.filter(p => !state.avail || p.status==='available');
+    const counts = new Map(); pool.forEach(p => { if(p.stage) counts.set(p.stage, (counts.get(p.stage)||0)+1); });
+    const stages = [...counts.keys()].sort((a,b)=>(STAGE_ORDER.indexOf(a)+99)%99-(STAGE_ORDER.indexOf(b)+99)%99);
+    if(state.stage && !counts.has(state.stage)) stages.push(state.stage);
     const box = $('#chips'); box.replaceChildren();
     ['All stages',...stages].forEach(s => {
-      const b = el('button','chip', s); b.type='button';
       const val = s==='All stages' ? '' : s;
+      const b = el('button','chip', s); b.type='button';
+      b.append(el('span','ct', String(val ? (counts.get(val)||0) : pool.length)));
       b.setAttribute('aria-pressed', String(state.stage===val));
       b.onclick = () => { state.stage = val; renderChips(); render(); };
       box.append(b);
     });
+  }
+
+  // ---- At a glance ----
+  function glance(){
+    const d = state.data;
+    const P = d.plants.filter(p=>p.status==='available'), C = d.corms.filter(c=>c.status==='available');
+    const g = el('section','glance');
+    const h = el('h2', null, 'Available right now');
+    const more = el('button', null, 'All counts →'); more.type='button'; more.onclick = () => setTab('counts');
+    h.append(more); g.append(h);
+    const k = el('div','kpis');
+    [[P.length,'plants'],[C.reduce((s,c)=>s+c.qty,0),'corms'],[new Set(P.map(p=>p.cultivar)).size,'cultivars']]
+      .forEach(([n,l]) => { const x=el('div','kpi'); x.append(el('b',null,String(n)), el('span',null,l)); k.append(x); });
+    g.append(k);
+    const rows = tally(P, p=>p.cultivar).slice(0,6);
+    if(rows.length){
+      const box = el('div','toplist'); box.append(el('p','lbl','Most available'));
+      const max = rows[0][1];
+      rows.forEach(([name, n]) => {
+        const b = el('button','tbar'); b.type='button'; b.title = `${name}: ${n} available. Show them.`;
+        b.setAttribute('aria-label', `${name}, ${n} available. Show them.`);
+        const tr = el('span','tr'); const f = el('span','fl'); f.style.width = (n/max*100).toFixed(1)+'%'; tr.append(f);
+        b.append(el('span','l',name), tr, el('span','v',String(n)));
+        b.onclick = () => {
+          state.q = name; $('#q').value = name; state.stage = ''; state.avail = true; $('#avail').checked = true;
+          renderChips(); setTab('plants');
+        };
+        box.append(b);
+      });
+      g.append(box);
+    }
+    return g;
+  }
+
+  // ---- Inquiry list (kept on this device only) ----
+  let list = [];
+  try{ list = (JSON.parse(localStorage.getItem('pc.list') || '[]') || []).filter(i => i && typeof i.k === 'string'); }catch(e){ list = []; }
+  const keyOf = (kind, x) => kind==='plant' ? 'p:'+x.sku : 'c:'+x.lot;
+  const inList = k => list.some(i => i.k === k);
+  const canAdd = x => x.status==='available' || x.status==='hold';
+  function saveList(){ try{ localStorage.setItem('pc.list', JSON.stringify(list)); }catch(e){} updateListBar(); }
+  function toggleItem(kind, x){
+    const k = keyOf(kind, x);
+    if(inList(k)) list = list.filter(i => i.k !== k); else list.push({k, qty:1});
+    saveList(); render();
+  }
+  function resolve(i){
+    const d = state.data; if(!d) return null;
+    const id = i.k.slice(2);
+    if(i.k[0]==='p'){ const p = d.plants.find(p=>p.sku===id); return p ? {kind:'plant', x:p} : null; }
+    const c = d.corms.find(c=>c.lot===id); return c ? {kind:'corm', x:c} : null;
+  }
+  function addBtn(kind, x){
+    const k = keyOf(kind, x), on = inList(k);
+    const name = kind==='plant' ? `${x.cultivar} ${x.var}, SKU ${x.sku}` : `${x.item}, lot ${x.lot}`;
+    const b = el('button','add', on ? '✓' : '+'); b.type='button';
+    b.setAttribute('aria-pressed', String(on));
+    b.setAttribute('aria-label', on ? `Remove ${name} from your inquiry list` : `Add ${name} to your inquiry list`);
+    b.title = on ? 'In your inquiry list (tap to remove)' : 'Add to inquiry list';
+    b.onclick = () => toggleItem(kind, x);
+    return b;
+  }
+  function row(btn, kind, x){
+    const w = el('div','row'); w.append(btn);
+    if(canAdd(x)) w.append(addBtn(kind, x)); else w.classList.add('solo');
+    return w;
   }
 
   function renderPlants(view){
@@ -267,6 +423,7 @@ main .wrap{padding-block:14px 40px}
       (!q || matches([p.sku,p.cultivar,p.var,p.species,p.stage,STATUS[p.status]].join(' ').toLowerCase(), q)));
     const rank = {available:0, hold:1, nfs:2};
     list.sort((a,b)=> a.cultivar.localeCompare(b.cultivar) || a.var.localeCompare(b.var) || rank[a.status]-rank[b.status] || a.sku.localeCompare(b.sku));
+    if(!mqWide.matches && !q && !state.stage) view.append(glance());
     view.append(el('p','summary', `${list.length} plant${list.length===1?'':'s'}` + (state.avail?' available':' in the collection') + (state.stage?` \u00b7 ${state.stage}`:'') + (q?` matching \u201c${state.q.trim()}\u201d`:'')));
     if(!list.length){ view.append(emptyState()); return; }
     const groups = new Map();
@@ -289,7 +446,7 @@ main .wrap{padding-block:14px 40px}
           b.append(img, mid, r);
         } else b.append(swatch(p.var), mid, r);
         b.onclick = () => openSheet('plant', p);
-        ul.append(b);
+        ul.append(row(b, 'plant', p));
       });
       g.append(h2, ul); view.append(g);
     });
@@ -312,7 +469,7 @@ main .wrap{padding-block:14px 40px}
       const r = el('div','r'); r.append(el('span','sku','Lot '+c.lot), pill(c.status));
       b.append(swatch(c.var || c.item), mid, r);
       b.onclick = () => openSheet('corm', c);
-      ul.append(b);
+      ul.append(row(b, 'corm', c));
     });
     view.append(ul);
   }
@@ -402,7 +559,7 @@ main .wrap{padding-block:14px 40px}
     lastFocus = document.activeElement;
     const s = el('div','sheet'); s.setAttribute('role','dialog'); s.setAttribute('aria-modal','true');
     s.append(el('div','grab'));
-    if(x.media && x.media.length) s.append(gallery(x.media, kind==='plant' ? x.cultivar+' '+x.var : x.item));
+    if(x.media && x.media.length){ s.classList.add('has-gallery'); s.append(gallery(x.media, kind==='plant' ? x.cultivar+' '+x.var : x.item)); }
     const head = el('div','head');
     const title = kind==='plant' ? x.cultivar : x.item;
     const ht = el('div'); ht.append(el('h3',null,title), el('div','sku', (kind==='plant'?'SKU ':'Lot ')+(kind==='plant'?x.sku:x.lot)));
@@ -416,8 +573,15 @@ main .wrap{padding-block:14px 40px}
     s.append(dl);
 
     const actions = el('div','actions');
+    if(canAdd(x)){
+      const k = keyOf(kind, x);
+      const add = el('button','btn'); add.type='button';
+      const paint = () => { const on = inList(k); add.textContent = on ? '✓ In your inquiry list' : 'Add to inquiry list'; add.classList.toggle('ghost', on); };
+      add.onclick = () => { toggleItem(kind, x); paint(); };
+      paint(); actions.append(add);
+    }
     if(x.album){ const a=el('a','btn ghost','View photos'); a.href=x.album; a.target='_blank'; a.rel='noopener'; actions.append(a); }
-    const askBtn = el('button','btn','Ask about this '+(kind==='plant'?'plant':'lot')); askBtn.type='button';
+    const askBtn = el('button','btn ghost','Ask about just this '+(kind==='plant'?'plant':'lot')); askBtn.type='button';
     actions.append(askBtn);
     s.append(actions);
 
@@ -446,13 +610,163 @@ main .wrap{padding-block:14px 40px}
     scrim.replaceChildren(s); scrim.hidden = false; close.focus();
   }
 
+  // ---- Inquiry list: floating bar + sheet ----
+  const bar = el('div','listbar'); bar.hidden = true; bar.setAttribute('role','region'); bar.setAttribute('aria-label','Inquiry list');
+  document.body.append(bar);
+  function updateListBar(){
+    const n = list.length;
+    bar.hidden = !n; document.body.classList.toggle('has-list', !!n);
+    if(!n) return;
+    const b = el('button','btn','Ready to inquire'); b.type='button'; b.onclick = openList;
+    bar.replaceChildren(el('span', null, `Inquiry list · ${n}`), b);
+  }
+
+  function channels(){
+    const ch = (window.CATALOG_CONFIG && window.CATALOG_CONFIG.channels) || {};
+    const out = [];
+    if(ch.messenger) out.push({id:'messenger', label:'Messenger', url:ch.messenger});
+    if(ch.instagram) out.push({id:'instagram', label:'Instagram', url:'https://ig.me/m/' + encodeURIComponent(String(ch.instagram).replace(/^@/,''))});
+    if(ch.email) out.push({id:'email', label:'Email', email:ch.email});
+    return out;
+  }
+  function copyText(text, ta){
+    try{ if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(()=>true, ()=>fallbackCopy(ta)); }catch(e){}
+    return Promise.resolve(fallbackCopy(ta));
+  }
+  function fallbackCopy(ta){ try{ ta.focus(); ta.select(); return document.execCommand('copy'); }catch(e){ return false; } }
+
+  function openList(){
+    lastFocus = document.activeElement;
+    let saved = {}; try{ saved = JSON.parse(localStorage.getItem('pc.inq') || '{}') || {}; }catch(e){}
+    const chs = channels();
+    let cur = chs.find(c => c.id === saved.ch) || chs[0] || null;
+
+    const s = el('div','sheet'); s.setAttribute('role','dialog'); s.setAttribute('aria-modal','true'); s.setAttribute('aria-labelledby','inq-title');
+    const title = el('h3', null, 'Your inquiry list'); title.id = 'inq-title';
+    s.append(el('div','grab'), title,
+      el('p','lead','Send me what caught your eye. There’s no commitment: I’ll reply with availability, pricing and shipping.'));
+    const items = el('div'); s.append(items);
+
+    const nameF = el('label','field'); nameF.append('Your name (optional)');
+    const name = el('input'); name.autocomplete = 'name'; name.value = saved.name || ''; nameF.append(name);
+    const noteF = el('label','field'); noteF.append('Anything else? Questions, shipping ZIP, budget (optional)');
+    const note = el('textarea'); note.value = saved.note || ''; noteF.append(note);
+    s.append(nameF, noteF);
+
+    const chHead = el('h4', null, 'How would you like to send it?');
+    const chBox = el('div','channels'); chBox.setAttribute('role','group'); chBox.setAttribute('aria-label','Send with');
+    chs.forEach(c => {
+      const b = el('button', null, c.label); b.type='button';
+      b.onclick = () => { cur = c; persist(); paintCh(); };
+      b.dataset.id = c.id; chBox.append(b);
+    });
+    if(chs.length) s.append(chHead, chBox);
+
+    const prevF = el('label','field'); prevF.append('Your message');
+    const preview = el('textarea','preview'); prevF.append(preview);
+    s.append(prevF);
+
+    const act = el('div','actions');
+    const send = el('a','btn'); send.rel = 'noopener';
+    const copy = el('button','btn ghost','Copy message'); copy.type='button';
+    const toast = el('div','toast'); toast.setAttribute('aria-live','polite');
+    act.append(send, copy, toast);
+    const clear = el('button','linkbtn','Clear my list'); clear.type='button';
+    const close = el('button','btn ghost','Keep browsing'); close.type='button'; close.style.marginTop='10px'; close.style.width='100%'; close.onclick = closeSheet;
+    s.append(act, close, clear);
+
+    function persist(){ try{ localStorage.setItem('pc.inq', JSON.stringify({name:name.value, note:note.value, ch: cur && cur.id})); }catch(e){} }
+    function line(i){
+      const r = resolve(i);
+      if(!r) return `• ${i.k[0]==='p' ? 'SKU' : 'Corm lot'} ${i.k.slice(2)}`;
+      const {kind, x} = r;
+      return kind==='plant'
+        ? `• SKU ${x.sku}: ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}`
+        : `• Corm lot ${x.lot}: ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
+    }
+    function message(){
+      const out = ['Hi! I’m interested in these from your Plant Catalog:', ...list.map(line), '', 'Could you let me know availability, pricing and shipping?'];
+      if(note.value.trim()) out.push('', note.value.trim());
+      if(name.value.trim()) out.push('', '— ' + name.value.trim());
+      return out.join('\n');
+    }
+    const subject = () => `Plant inquiry (${list.length} item${list.length===1?'':'s'})`;
+    function refresh(){
+      preview.value = message();
+      paintCh();
+    }
+    function paintCh(){
+      chBox.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(!!cur && b.dataset.id===cur.id)));
+      const empty = !list.length;
+      send.hidden = !cur || empty; copy.disabled = empty;
+      if(!cur) return;
+      if(cur.id==='email'){
+        send.textContent = 'Open email with my inquiry';
+        send.href = `mailto:${cur.email}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(preview.value)}`;
+        send.removeAttribute('target');
+      } else {
+        send.textContent = `Copy & open ${cur.label}`;
+        send.href = cur.url; send.target = '_blank';
+      }
+    }
+    send.onclick = () => {
+      if(cur && cur.id==='email'){ send.href = `mailto:${cur.email}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(preview.value)}`; toast.textContent = 'Your email app should open with the message ready to send.'; return; }
+      copyText(preview.value, preview).then(ok => {
+        toast.textContent = ok ? `Message copied. Paste it into ${cur ? cur.label : 'your message'} and send.` : 'Copy the message above, then paste it into the chat.';
+      });
+    };
+    copy.onclick = () => copyText(preview.value, preview).then(ok => { toast.textContent = ok ? 'Message copied.' : 'Selected. Copy it with your keyboard or long-press.'; });
+    clear.onclick = () => { list = []; saveList(); render(); drawItems(); refresh(); };
+    [name, note].forEach(f => f.addEventListener('input', () => { persist(); refresh(); }));
+    preview.addEventListener('input', () => { if(cur && cur.id==='email') send.href = `mailto:${cur.email}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(preview.value)}`; });
+
+    function drawItems(){
+      items.replaceChildren();
+      clear.hidden = !list.length;
+      if(!list.length){ items.append(el('p','empty','Your list is empty. Tap + next to anything you’d like to ask about.')); return; }
+      const wrap = el('div');
+      list.forEach(i => {
+        const r = resolve(i); const li = el('div','li');
+        const x0 = el('button','x','×'); x0.type='button';
+        x0.onclick = () => { list = list.filter(j => j !== i); saveList(); render(); drawItems(); refresh(); };
+        if(!r){
+          x0.setAttribute('aria-label','Remove');
+          const m = el('div'); m.append(el('div','t', (i.k[0]==='p'?'SKU ':'Lot ') + i.k.slice(2)), el('div','warn','No longer listed'));
+          li.append(el('span'), m, x0); wrap.append(li); return;
+        }
+        const {kind, x} = r;
+        const nm = kind==='plant' ? `${x.cultivar}${x.var?' '+x.var:''}` : x.item;
+        x0.setAttribute('aria-label', `Remove ${nm}`);
+        let pic;
+        if(kind==='plant' && x.media && x.media.length){ pic = driveImg(cover(x.media).id, 120, ''); pic.addEventListener('gone', () => pic.replaceWith(swatch(x.var))); }
+        else pic = swatch(x.var || x.item);
+        const m = el('div');
+        m.append(el('div','t', nm), el('div','m', kind==='plant' ? `SKU ${x.sku}${x.stage?' · '+x.stage:''}` : `Lot ${x.lot}${x.var?' · '+x.var:''}`));
+        if(x.status==='hold') m.append(el('div','warn','On hold right now, but you can still ask'));
+        else if(x.status!=='available') m.append(el('div','warn','No longer for sale'));
+        if(kind==='corm' && x.qty>1){
+          const q = el('div','qty'); const minus = el('button', null, '−'), plus = el('button', null, '+'), val = el('span');
+          minus.type = plus.type = 'button'; minus.setAttribute('aria-label','Fewer corms'); plus.setAttribute('aria-label','More corms');
+          const upd = () => { i.qty = Math.min(Math.max(1, i.qty||1), x.qty); val.textContent = `${i.qty} of ${x.qty} corms`; minus.disabled = i.qty<=1; plus.disabled = i.qty>=x.qty; };
+          minus.onclick = () => { i.qty--; upd(); saveList(); refresh(); };
+          plus.onclick = () => { i.qty++; upd(); saveList(); refresh(); };
+          upd(); q.append(minus, val, plus); m.append(q);
+        }
+        li.append(pic, m, x0); wrap.append(li);
+      });
+      items.append(wrap);
+    }
+    drawItems(); refresh();
+    scrim.replaceChildren(s); scrim.hidden = false; close.focus();
+  }
+
   // ---- Wiring ----
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
-    state.tab = b.dataset.tab; try{ localStorage.setItem('pc.tab', state.tab); }catch(e){}
-    window.scrollTo(0,0); render();
-  });
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  mqWide.addEventListener('change', () => render());
+  window.addEventListener('resize', measureHeader);
+  updateListBar();
   $('#q').addEventListener('input', e => { state.q = e.target.value; render(); });
-  $('#avail').addEventListener('change', e => { state.avail = e.target.checked; render(); });
+  $('#avail').addEventListener('change', e => { state.avail = e.target.checked; renderChips(); render(); });
 
   // ---- Live data ----
   // Each visitor's copy runs on its own: it reads the feed, keeps the last copy on this
