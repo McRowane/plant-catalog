@@ -259,6 +259,20 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
   body.has-list main .wrap{padding-bottom:40px}
 }
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+.soon{margin:4px 0 18px}
+.soon h2{font:700 1.1rem/1.2 var(--f-display);margin:0 0 6px}
+.soon h2 small{display:block;font:400 .8rem var(--f-body);color:var(--muted);margin-top:2px}
+.soon .strip2{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,78%);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 0 6px;scrollbar-width:none}
+.soon .strip2::-webkit-scrollbar{display:none}
+.soon .card{scroll-snap-align:start;border:1px dashed var(--accent);background:var(--surface);border-radius:14px;padding:12px;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.soon .card .t{font-weight:700;line-height:1.2}
+.soon .card .m{font-size:.82rem;color:var(--muted);margin-top:2px}
+.soon .card .n{font-size:.84rem;margin-top:6px}
+.soon .card .btn{grid-column:1/-1;margin-top:4px;padding:9px 12px;font-size:.9rem}
+.parentbox{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px;margin-top:12px;cursor:pointer;color:inherit}
+.parentbox .t{font-weight:700}
+.parentbox .m{font-size:.82rem;color:var(--muted)}
+@media (min-width:1024px){.soon .strip2{grid-auto-columns:minmax(240px,320px)}}
 </style>
 </head>
 <body>
@@ -424,6 +438,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const d = state.data; if(!d) return null;
     const id = i.k.slice(2);
     if(i.k[0]==='p'){ const p = d.plants.find(p=>p.sku===id); return p ? {kind:'plant', x:p} : null; }
+    if(i.k[0]==='s'){ const c = (d.coming || []).find(c=>c.id===id); return c ? {kind:'soon', x:c} : null; }
     const c = d.corms.find(c=>c.lot===id); return c ? {kind:'corm', x:c} : null;
   }
   function addBtn(kind, x){
@@ -451,6 +466,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const rank = {available:0, hold:1, nfs:2};
     list.sort((a,b)=> a.cultivar.localeCompare(b.cultivar) || a.var.localeCompare(b.var) || rank[a.status]-rank[b.status] || a.sku.localeCompare(b.sku));
     if(!mqWide.matches && !q && !state.stage) view.append(glance());
+    if(!q && !state.stage) { const cs = comingSoon(); if(cs) view.append(cs); }
     view.append(el('p','summary', `${list.length} plant${list.length===1?'':'s'}` + (state.avail?' available':' in the collection') + (state.stage?` \u00b7 ${state.stage}`:'') + (q?` matching \u201c${state.q.trim()}\u201d`:'')));
     if(!list.length){ view.append(emptyState()); return; }
     const groups = new Map();
@@ -479,6 +495,28 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     });
   }
 
+  // ---- Coming soon: customers tap "Notify me" and land on the waitlist ----
+  function comingSoon(){
+    const items = (state.data.coming || []);
+    if(!items.length) return null;
+    const sec = el('section','soon');
+    const h = el('h2', null, 'Coming soon!!'); h.append(el('small', null, 'Tap Notify me and I\u2019ll reach out first'));
+    const strip = el('div','strip2');
+    items.forEach(c => {
+      const card = el('div','card');
+      let pic = swatch(c.var || c.cultivar);
+      if(c.photo){ pic = driveImg(c.photo, 160, ''); pic.className = 'thumb'; pic.addEventListener('gone', () => pic.replaceWith(swatch(c.var))); }
+      const mid = el('div'); mid.append(el('div','t', `${c.cultivar}${c.var ? ' ' + c.var : ''}`), el('div','m', [c.stage, c.expected ? 'Expected ' + c.expected : ''].filter(Boolean).join(' \u00b7 ')));
+      if(c.note) mid.append(el('div','n', c.note));
+      const b = el('button','btn','Notify me'); b.type = 'button'; b.onclick = () => openList([{k:'s:' + c.id, qty:1}]);
+      card.append(pic, mid, b); strip.append(card);
+    });
+    sec.append(h, strip);
+    return sec;
+  }
+  // The parent plant (when an item lists a parent SKU that's in the catalog).
+  const parentOf = x => x && x.parent ? state.data.plants.find(p => p.sku === x.parent) : null;
+
   function renderCorms(view){
     const q = state.q.toLowerCase().trim();
     let list = state.data.corms.filter(c =>
@@ -494,7 +532,9 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       const mid = el('div','mid');
       mid.append(el('div','t', c.item), el('div','m', [c.qty ? `${c.qty} corm${c.qty===1?'':'s'}` : '', c.var, c.harvest ? 'Harvested '+c.harvest : ''].filter(Boolean).join(' \u00b7 ')));
       const r = el('div','r'); r.append(el('span','sku','Lot '+c.lot), pill(c.status));
-      b.append(swatch(c.var || c.item), mid, r);
+      const par = parentOf(c);
+      if(par && par.media && par.media.length){ const im = driveImg(cover(par.media).id, 160, ''); im.className = 'thumb'; im.title = 'Parent plant, SKU ' + par.sku; im.addEventListener('gone', () => im.replaceWith(swatch(c.var || c.item))); b.classList.add('has-photo'); b.append(im, mid, r); }
+      else b.append(swatch(c.var || c.item), mid, r);
       b.onclick = () => openSheet('corm', c);
       ul.append(row(b, 'corm', c));
     });
@@ -598,6 +638,15 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       : [['Status',STATUS[x.status]],['Quantity',x.qty?`${x.qty} corm${x.qty===1?'':'s'}`:''],['Var-type',x.var],['Cultivar',x.cultivar],['Harvested',x.harvest]];
     rows.filter(r=>r[1]).forEach(([k,v])=>{ const d=el('div'); d.append(el('dt',null,k), el('dd',null,v)); dl.append(d); });
     s.append(dl);
+    const par = parentOf(x);
+    if(par){
+      const pb = el('button','parentbox'); pb.type = 'button';
+      let pic = swatch(par.var || par.cultivar);
+      if(par.media && par.media.length){ pic = driveImg(cover(par.media).id, 240, `Parent plant ${par.cultivar}`); pic.className = 'thumb'; pic.addEventListener('gone', () => pic.replaceWith(swatch(par.var))); }
+      const pm = el('div'); pm.append(el('div','m', kind==='plant' ? 'Parent plant' : 'From this parent plant'), el('div','t', `${par.cultivar}${par.var ? ' ' + par.var : ''}`), el('div','m', 'SKU ' + par.sku + (par.media && par.media.length ? ' \u00b7 tap to see photos' : '')));
+      pb.append(pic, pm); pb.onclick = () => openSheet('plant', par);
+      s.append(pb);
+    }
 
     const actions = el('div','actions');
     if(canAdd(x)){
@@ -648,6 +697,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const r = resolve(i);
     if(!r) return `[${i.k[0]==='p' ? '' : 'Corm '}${i.k.slice(2)}]`;
     const {kind, x} = r;
+    if(kind==='soon') return `[Coming soon] ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}`;
     return kind==='plant'
       ? `[${x.sku}] - ${x.cultivar}${x.var?' '+x.var:''}`
       : `[Corm ${x.lot}] - ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
@@ -745,7 +795,8 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       e.preventDefault();
       if(!validate(true)) return;
       const CFGx = window.CATALOG_CONFIG || {};
-      const payload = {name: name.value.trim(), contact: contact(), items: picks.map(itemLine), message: msg.value.trim(), website: trap.value, page: 'catalog'};
+      const waitlist = picks.map(resolve).filter(r => r && r.kind==='soon').map(r => ({cultivar:r.x.cultivar, var:r.x.var, stage:r.x.stage}));
+      const payload = {name: name.value.trim(), contact: contact(), items: picks.map(itemLine), message: msg.value.trim(), website: trap.value, page: 'catalog', waitlist};
       send.disabled = true; send.textContent = 'Sending…';
       fetch(CFGx.FEED_URL, {method:'POST', body: JSON.stringify(payload)})
         .then(r => r.json())
@@ -806,6 +857,12 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
           li.append(el('span'), m, x0); items.append(li); return;
         }
         const {kind, x} = r;
+        if(kind==='soon'){
+          const nm2 = `${x.cultivar}${x.var?' '+x.var:''}`; x0.setAttribute('aria-label', `Remove ${nm2}`);
+          let pic2 = swatch(x.var || x.cultivar); if(x.photo){ pic2 = driveImg(x.photo, 120, ''); pic2.addEventListener('gone', () => pic2.replaceWith(swatch(x.var))); }
+          const m2 = el('div'); m2.append(el('div','t', nm2), el('div','m', ['Coming soon', x.stage, x.expected ? 'expected ' + x.expected : ''].filter(Boolean).join(' · ')));
+          li.append(pic2, m2, x0); items.append(li); return;
+        }
         const nm = kind==='plant' ? `${x.cultivar}${x.var?' '+x.var:''}` : x.item;
         x0.setAttribute('aria-label', `Remove ${nm}`);
         let pic;
