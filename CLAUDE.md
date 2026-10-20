@@ -21,4 +21,4 @@ spreadsheet/Drive IDs.
 - Keep the shared design: Bricolage Grotesque / Atkinson Hyperlegible / JetBrains Mono, the leaf-green and
   magenta tokens, dark mode, 16px gutters, nothing wider than the phone.
 - Test on a phone-width viewport before calling a change done.
-- The tag `baseline-2026-10-20` marks the version before Claude Code took over; restore from it if needed.
+- The branch `baseline-2026-10-20` marks the version before Claude Code took over; restore from it if needed.
