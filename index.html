@@ -98,6 +98,7 @@ main .wrap{padding-block:14px 40px}
 .unit .pic.none{cursor:default}
 .unit .t{font:500 .9rem var(--f-mono)}
 .unit .add{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;font-size:1.2rem}
+.unit .auclink{font:600 .82rem var(--f-body);color:var(--auc);text-decoration:none;border:1px solid currentColor;border-radius:999px;padding:6px 10px;white-space:nowrap}
 .lotsec{margin-top:16px}
 .lotsec h4{font:700 1rem var(--f-display);margin:0;display:flex;justify-content:space-between;gap:8px}
 .lotsec h4 small{font:400 .8rem var(--f-body);color:var(--muted)}
@@ -693,11 +694,13 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
         pic.append(im); pic.setAttribute('aria-label', `See the photo of corm ${u.id}`); pic.onclick = () => viewer([{k:'photo', id:u.photo}], 0, `Corm ${u.id} · ${c.item}`);
       } else { pic.append(swatch(c.var || c.item)); pic.disabled = true; pic.setAttribute('aria-label', 'No photo yet'); }
       r.append(pic, el('span','t', u.id), pill(u.status));
-      if(canAdd(x)) r.append(addBtn('unit', x)); else r.append(el('span'));
+      if(canAdd(x)) r.append(addBtn('unit', x));
+      else if(u.status === 'auction' && /^https:\/\//.test(u.link || '')){ const a = el('a','auclink','View auction'); a.href = u.link; a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('aria-label', `View the auction for corm ${u.id}`); r.append(a); }
+      else r.append(el('span'));
       box.append(r);
     });
     w.append(box);
-    w.append(el('p','note', 'Tap + to add a single corm to your inquiry list. Auction corms go up on my auctions.'));
+    w.append(el('p','note', 'Tap + to add a single corm to your inquiry list. Auction corms link to their auction.'));
     return w;
   }
 

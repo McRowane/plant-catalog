@@ -1,6 +1,6 @@
 // Keeps the app itself available offline and quick to open. Inventory data is not
 // cached here: the page always asks the live feed and keeps its own last copy.
-const VERSION = 'pc-v6';
+const VERSION = 'pc-v7';
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

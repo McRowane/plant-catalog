@@ -19,7 +19,8 @@ spreadsheet/Drive IDs.
 - SOLD items must never show (the feed already drops them; don't add any path that could show them).
 - Customers see: Available, On hold (pending payment or deposit paid), Not for sale, and Auction (individual corms).
 - Corms are grouped by cultivar with a var-type filter. A lot with individual corms lists them (sub-SKU, photo,
-  status); customers can add a single for-sale corm to their inquiry list.
+  status); customers can add a single for-sale corm to their inquiry list. Auction corms show "View auction" (the
+  feed only sends https links, only for Auction corms).
 - Photos and videos open in the catalog's own viewer. Never link customers out to Google Drive (videos play in a
   sandboxed Drive frame that can't pop out).
 - Preview with sample data from the private `plant-business` repo: `node tools/catalog-preview.js 8793 ../plant-catalog`.
