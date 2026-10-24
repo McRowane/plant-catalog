@@ -25,7 +25,7 @@
 :root{
   --bg:#f2f4ef; --surface:#ffffff; --sunk:#e7ebe4; --line:#d3dbd0;
   --fg:#17211b; --muted:#5b685f; --leaf:#2c6e49; --leaf-soft:#dcebe1;
-  --accent:#a8326a; --accent-fg:#ffffff; --hold:#9a6a12; --hold-soft:#f5e9cf; --nfs-soft:#e9ece8;
+  --accent:#a8326a; --accent-fg:#ffffff; --hold:#9a6a12; --hold-soft:#f5e9cf; --nfs-soft:#e9ece8; --auc:#245d8f; --auc-soft:#dde9f4;
   --sw-green:#3f7d4f; --sw-albo:#fbfaf3; --sw-aurea:#e7c63d; --sw-pink:#ec8fb2; --sw-mint:#a9dcc2; --sw-purple:#7c4a86;
   --shadow:0 1px 2px rgba(23,33,27,.06),0 4px 14px rgba(23,33,27,.06);
   --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
@@ -35,13 +35,13 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f1512; --surface:#18201b; --sunk:#1f2923; --line:#2c3831;
   --fg:#e6ece6; --muted:#9aa89e; --leaf:#7cc79a; --leaf-soft:#1f3a2a;
-  --accent:#e87aa9; --accent-fg:#22101a; --hold:#e2b45a; --hold-soft:#3a2f17; --nfs-soft:#232c26;
+  --accent:#e87aa9; --accent-fg:#22101a; --hold:#e2b45a; --hold-soft:#3a2f17; --nfs-soft:#232c26; --auc:#8cbcf0; --auc-soft:#1b2c3d;
   --sw-green:#4f9a63; --sw-albo:#f2f1ea; --sw-aurea:#e2c040; --sw-pink:#ef9cbc; --sw-mint:#9fd8bb; --sw-purple:#a879b3;
   --shadow:none; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1512; --surface:#18201b; --sunk:#1f2923; --line:#2c3831;
   --fg:#e6ece6; --muted:#9aa89e; --leaf:#7cc79a; --leaf-soft:#1f3a2a;
-  --accent:#e87aa9; --accent-fg:#22101a; --hold:#e2b45a; --hold-soft:#3a2f17; --nfs-soft:#232c26;
+  --accent:#e87aa9; --accent-fg:#22101a; --hold:#e2b45a; --hold-soft:#3a2f17; --nfs-soft:#232c26; --auc:#8cbcf0; --auc-soft:#1b2c3d;
   --sw-green:#4f9a63; --sw-albo:#f2f1ea; --sw-aurea:#e2c040; --sw-pink:#ef9cbc; --sw-mint:#9fd8bb; --sw-purple:#a879b3;
   --shadow:none; color-scheme:dark}
 
@@ -89,6 +89,35 @@ main .wrap{padding-block:14px 40px}
 .pill.available{background:var(--leaf-soft);color:var(--leaf)}
 .pill.hold{background:var(--hold-soft);color:var(--hold)}
 .pill.nfs{background:var(--nfs-soft);color:var(--muted)}
+.pill.auction{background:var(--auc-soft);color:var(--auc)}
+/* Individual corms in a lot */
+.units{display:grid;gap:6px;margin-top:8px}
+.unit{display:grid;grid-template-columns:52px 1fr auto auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface)}
+.unit .pic{width:52px;height:52px;border-radius:10px;overflow:hidden;background:var(--sunk);border:0;padding:0;display:grid;place-items:center;cursor:zoom-in}
+.unit .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.unit .pic.none{cursor:default}
+.unit .t{font:500 .9rem var(--f-mono)}
+.unit .add{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;font-size:1.2rem}
+.unit .auclink{font:600 .82rem var(--f-body);color:var(--auc);text-decoration:none;border:1px solid currentColor;border-radius:999px;padding:6px 10px;white-space:nowrap}
+.lotsec{margin-top:16px}
+.lotsec h4{font:700 1rem var(--f-display);margin:0;display:flex;justify-content:space-between;gap:8px}
+.lotsec h4 small{font:400 .8rem var(--f-body);color:var(--muted)}
+/* Full-screen photo & video viewer (stays in the catalog: no trip to Google Drive) */
+.viewer{position:fixed;inset:0;z-index:60;background:#000;display:grid;grid-template-rows:auto 1fr;color:#fff}
+.vbar{display:flex;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px))}
+.vtitle{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vcount{font:500 .82rem var(--f-mono);opacity:.8}
+.vclose{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:1.6rem;line-height:1;cursor:pointer}
+.vstrip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;min-height:0}
+.vstrip::-webkit-scrollbar{display:none}
+.vslide{flex:0 0 100%;scroll-snap-align:center;display:grid;place-items:center;min-height:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.vslide img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.vslide iframe{width:100%;height:100%;border:0;background:#000}
+.vslide .vid{width:auto;height:auto;max-width:100%;max-height:100%}
+.vnav{position:absolute;top:50%;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:1.6rem;cursor:pointer}
+.vprev{left:10px}.vnext{right:10px}
+@media (hover:none){.vnav{display:none}}
+.slide img{cursor:zoom-in}
 
 /* Variegation swatch: a leaf disc split between green and the variegation colour. */
 .sw{width:30px;height:30px;border-radius:50% 50% 50% 6px;border:1px solid var(--line);background:conic-gradient(var(--sw-green) 0 50%,var(--v,var(--sw-green)) 50% 100%);flex:none}
@@ -308,12 +337,12 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
 <script>
 (function(){
   const $ = s => document.querySelector(s);
-  const state = {tab:'plants', q:'', avail:true, stage:'', data:null};
+  const state = {tab:'plants', q:'', avail:true, stage:'', cvar:'', data:null};
   try{ const t = localStorage.getItem('pc.tab'); if(['plants','corms','counts'].includes(t)) state.tab = t; }catch(e){}
   const h = location.hash.replace('#','');
   if(['plants','corms','counts'].includes(h)) state.tab = h;
 
-  const STATUS = {available:'Available', hold:'On hold', nfs:'Not for sale'};
+  const STATUS = {available:'Available', hold:'On hold', nfs:'Not for sale', auction:'Auction'};
   const STAGE_ORDER = ['Sprouting Corm','Lil Babyy','Pup','Offshoot','Teen','Parent','Cutting','Rehab'];
 
   function swatch(v){
@@ -360,7 +389,9 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const d = state.data; if(!d) return;
     document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab===state.tab)));
     $('#searchrow').hidden = state.tab==='counts';
-    $('#chips').hidden = state.tab!=='plants';
+    $('#chips').hidden = state.tab==='counts';
+    $('#chips').setAttribute('aria-label', state.tab==='corms' ? 'Filter by var-type' : 'Filter by stage');
+    if(state.tab!=='counts') renderChips();
     const view = $('#view'); view.replaceChildren();
     if(state.tab==='plants') renderPlants(view);
     else if(state.tab==='corms') renderCorms(view);
@@ -374,7 +405,13 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
   }
   function measureHeader(){ document.documentElement.style.setProperty('--hdr', $('header.top').offsetHeight + 'px'); }
 
+  // A lot counts as available when it's for sale itself or any of its corms is (for sale or up for auction).
+  const lotOpen = c => c.status==='available' || (c.units || []).some(u => u.status==='available' || u.status==='auction');
+  const cvOf = c => c.common || c.cultivar || c.item;
+  // Corms a customer can get: listed corms for sale or at auction; otherwise the Qty of lots that are for sale.
+  const cormsAvailable = lots => lots.reduce((s,c) => s + (c.units ? c.units.filter(u => u.status==='available' || u.status==='auction').length : c.status==='available' ? c.qty : 0), 0);
   function renderChips(){
+    if(state.tab==='corms') return renderVarChips();
     const pool = state.data.plants.filter(p => !state.avail || p.status==='available');
     const counts = new Map(); pool.forEach(p => { if(p.stage) counts.set(p.stage, (counts.get(p.stage)||0)+1); });
     const stages = [...counts.keys()].sort((a,b)=>(STAGE_ORDER.indexOf(a)+99)%99-(STAGE_ORDER.indexOf(b)+99)%99);
@@ -390,6 +427,22 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     });
   }
 
+  function renderVarChips(){
+    const pool = state.data.corms.filter(c => !state.avail || lotOpen(c));
+    const counts = new Map(); pool.forEach(c => { if(c.var) counts.set(c.var, (counts.get(c.var)||0)+1); });
+    const vars = [...counts.keys()].sort((a,b) => a.localeCompare(b));
+    if(state.cvar && !counts.has(state.cvar)) vars.push(state.cvar);
+    const box = $('#chips'); box.replaceChildren();
+    ['Any var-type',...vars].forEach(v => {
+      const val = v==='Any var-type' ? '' : v;
+      const b = el('button','chip', v); b.type='button';
+      b.append(el('span','ct', String(val ? (counts.get(val)||0) : pool.length)));
+      b.setAttribute('aria-pressed', String(state.cvar===val));
+      b.onclick = () => { state.cvar = val; renderChips(); render(); };
+      box.append(b);
+    });
+  }
+
   // ---- At a glance ----
   function glance(){
     const d = state.data;
@@ -399,7 +452,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const more = el('button', null, 'All counts →'); more.type='button'; more.onclick = () => setTab('counts');
     h.append(more); g.append(h);
     const k = el('div','kpis');
-    [[P.length,'plants'],[C.reduce((s,c)=>s+c.qty,0),'corms'],[new Set(P.map(p=>p.cultivar)).size,'cultivars']]
+    [[P.length,'plants'],[cormsAvailable(d.corms),'corms'],[new Set(P.map(p=>p.cultivar)).size,'cultivars']]
       .forEach(([n,l]) => { const x=el('div','kpi'); x.append(el('b',null,String(n)), el('span',null,l)); k.append(x); });
     g.append(k);
     const rows = tally(P, p=>p.cultivar).slice(0,6);
@@ -425,7 +478,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
   // ---- Inquiry list (kept on this device only) ----
   let list = [];
   try{ list = (JSON.parse(localStorage.getItem('pc.list') || '[]') || []).filter(i => i && typeof i.k === 'string'); }catch(e){ list = []; }
-  const keyOf = (kind, x) => kind==='plant' ? 'p:'+x.sku : 'c:'+x.lot;
+  const keyOf = (kind, x) => kind==='plant' ? 'p:'+x.sku : kind==='unit' ? 'u:'+x.id : 'c:'+x.lot;
   const inList = k => list.some(i => i.k === k);
   const canAdd = x => x.status==='available' || x.status==='hold';
   function saveList(){ try{ localStorage.setItem('pc.list', JSON.stringify(list)); }catch(e){} updateListBar(); }
@@ -439,11 +492,12 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const id = i.k.slice(2);
     if(i.k[0]==='p'){ const p = d.plants.find(p=>p.sku===id); return p ? {kind:'plant', x:p} : null; }
     if(i.k[0]==='s'){ const c = (d.coming || []).find(c=>c.id===id); return c ? {kind:'soon', x:c} : null; }
+    if(i.k[0]==='u'){ for(const c of d.corms){ const u = (c.units || []).find(u => u.id===id); if(u) return {kind:'unit', x:Object.assign({}, u, {lot:c.lot, item:c.item, var:c.var})}; } return null; }
     const c = d.corms.find(c=>c.lot===id); return c ? {kind:'corm', x:c} : null;
   }
   function addBtn(kind, x){
     const k = keyOf(kind, x), on = inList(k);
-    const name = kind==='plant' ? `${x.cultivar} ${x.var}, SKU ${x.sku}` : `${x.item}, lot ${x.lot}`;
+    const name = kind==='plant' ? `${x.cultivar} ${x.var}, SKU ${x.sku}` : kind==='unit' ? `corm ${x.id} from ${x.item}` : `${x.item}, lot ${x.lot}`;
     const b = el('button','add', on ? '✓' : '+'); b.type='button';
     b.setAttribute('aria-pressed', String(on));
     b.setAttribute('aria-label', on ? `Remove ${name} from your inquiry list` : `Add ${name} to your inquiry list`);
@@ -517,28 +571,46 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
   // The parent plant (when an item lists a parent SKU that's in the catalog).
   const parentOf = x => x && x.parent ? state.data.plants.find(p => p.sku === x.parent) : null;
 
+  function lotPic(c){
+    const par = parentOf(c);
+    const m = (c.media && c.media.length) ? c.media : (par && par.media && par.media.length ? par.media : null);
+    if(!m) return null;
+    const im = driveImg(cover(m).id, 160, ''); im.className = 'thumb';
+    if(m !== c.media) im.title = 'Parent plant, SKU ' + par.sku;
+    return im;
+  }
   function renderCorms(view){
     const q = state.q.toLowerCase().trim();
     let list = state.data.corms.filter(c =>
-      (!state.avail || c.status==='available') &&
-      (!q || matches([c.lot,c.item,c.var,c.cultivar,'corm',STATUS[c.status]].join(' ').toLowerCase(), q)));
-    list.sort((a,b)=> a.item.localeCompare(b.item) || a.lot.localeCompare(b.lot));
-    const total = list.filter(c=>c.status==='available').reduce((s,c)=>s+c.qty,0);
-    view.append(el('p','summary', `${list.length} lot${list.length===1?'':'s'}` + (state.avail?` \u00b7 ${total} corms available`:' in the collection') + (q?` matching \u201c${state.q.trim()}\u201d`:'')));
+      (!state.avail || lotOpen(c)) &&
+      (!state.cvar || c.var===state.cvar) &&
+      (!q || matches([c.lot,c.item,c.var,c.cultivar,c.common,'corm',STATUS[c.status]].concat((c.units||[]).map(u => u.id)).join(' ').toLowerCase(), q)));
+    list.sort((a,b)=> cvOf(a).localeCompare(cvOf(b)) || (a.var||'').localeCompare(b.var||'') || a.item.localeCompare(b.item) || a.lot.localeCompare(b.lot));
+    const total = cormsAvailable(list);
+    view.append(el('p','summary', `${list.length} lot${list.length===1?'':'s'}` + (state.avail?` · ${total} corms available`:' in the collection') + (state.cvar?` · ${state.cvar}`:'') + (q?` matching “${state.q.trim()}”`:'')));
     if(!list.length){ view.append(emptyState()); return; }
-    const ul = el('div','list');
-    list.forEach(c => {
-      const b = el('button','item'); b.type='button';
-      const mid = el('div','mid');
-      mid.append(el('div','t', c.item), el('div','m', [c.qty ? `${c.qty} corm${c.qty===1?'':'s'}` : '', c.var, c.harvest ? 'Harvested '+c.harvest : ''].filter(Boolean).join(' \u00b7 ')));
-      const r = el('div','r'); r.append(el('span','sku','Lot '+c.lot), pill(c.status));
-      const par = parentOf(c);
-      if(par && par.media && par.media.length){ const im = driveImg(cover(par.media).id, 160, ''); im.className = 'thumb'; im.title = 'Parent plant, SKU ' + par.sku; im.addEventListener('gone', () => im.replaceWith(swatch(c.var || c.item))); b.classList.add('has-photo'); b.append(im, mid, r); }
-      else b.append(swatch(c.var || c.item), mid, r);
-      b.onclick = () => openSheet('corm', c);
-      ul.append(row(b, 'corm', c));
+    // Grouped by cultivar, like plants.
+    const groups = new Map();
+    list.forEach(c => { const k = cvOf(c); if(!groups.has(k)) groups.set(k, []); groups.get(k).push(c); });
+    groups.forEach((items, name) => {
+      const g = el('section','group');
+      const h2 = el('h2', null, name); h2.append(el('span','c', String(items.length)));
+      const ul = el('div','list');
+      items.forEach(c => {
+        const b = el('button','item'); b.type='button';
+        const mid = el('div','mid');
+        const forSale = c.units ? c.units.filter(u => u.status==='available').length : 0, auc = c.units ? c.units.filter(u => u.status==='auction').length : 0;
+        mid.append(el('div','t', c.item), el('div','m', [c.qty ? `${c.qty} corm${c.qty===1?'':'s'}` : '', c.var, c.harvest ? 'Harvested '+c.harvest : ''].filter(Boolean).join(' · ')));
+        if(c.units) mid.append(el('span','cam', [forSale ? forSale + ' for sale' : '', auc ? auc + ' at auction' : '', 'each listed'].filter(Boolean).join(' · ')));
+        const r = el('div','r'); r.append(el('span','sku','Lot '+c.lot), pill(c.status));
+        const pic = lotPic(c);
+        if(pic){ pic.addEventListener('gone', () => { pic.replaceWith(swatch(c.var || c.item)); b.classList.remove('has-photo'); }); b.classList.add('has-photo'); b.append(pic, mid, r); }
+        else b.append(swatch(c.var || c.item), mid, r);
+        b.onclick = () => openSheet('corm', c);
+        ul.append(row(b, 'corm', c));
+      });
+      g.append(h2, ul); view.append(g);
     });
-    view.append(ul);
   }
 
   function emptyState(){
@@ -566,13 +638,13 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const avail = P.filter(p=>p.status==='available');
     const cAvail = C.filter(c=>c.status==='available');
     const stats = el('div','stat-row');
-    [[avail.length,'plants available'],[cAvail.reduce((s,c)=>s+c.qty,0),'corms available'],[new Set(avail.map(p=>p.cultivar)).size,'cultivars for sale']]
+    [[avail.length,'plants available'],[cormsAvailable(C),'corms available'],[new Set(avail.map(p=>p.cultivar)).size,'cultivars for sale']]
       .forEach(([n,l])=>{ const s=el('div','stat'); s.append(el('b',null,String(n)), el('span',null,l)); stats.append(s); });
     view.append(stats);
     const sec = (title, node, note) => { const g=el('section','group'); const h=el('h2',null,title); g.append(h,node); if(note) g.append(el('p','note',note)); view.append(g); };
     sec('Available plants by cultivar', bars(tally(avail, p=>p.cultivar).slice(0,12)), 'Top 12 cultivars by plants available now.');
     sec('Available plants by stage', bars(tally(avail, p=>p.stage||'Stage not listed').sort((a,b)=>(STAGE_ORDER.indexOf(a[0])+99)%99-(STAGE_ORDER.indexOf(b[0])+99)%99)));
-    sec('Available corms by cultivar', bars(tally(cAvail, c=>c.cultivar||c.item, c=>c.qty).slice(0,12), 'corm'), 'Counts are individual corms across all lots.');
+    sec('Available corms by cultivar', bars(tally(cAvail, c=>c.common||c.cultivar||c.item, c=>c.qty).slice(0,12), 'corm'), 'Counts are individual corms across all lots.');
     sec('Whole collection by species', bars(tally(P, p=>p.species||null).slice(0,10)), 'Plants with a species recorded, including those not for sale.');
   }
 
@@ -584,19 +656,10 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       if(m.k==='photo'){
         const im = driveImg(m.id, 1600, `${alt}, photo ${i+1}`, i<2);
         im.addEventListener('gone', () => im.replaceWith(el('span','note','This photo couldn’t load right now.')));
+        im.addEventListener('click', () => viewer(media, i, alt));
         s.append(im);
       }
-      else {
-        // Video: show its poster with a play button; load Drive's player only when tapped.
-        const b = el('button','vid'); b.type='button'; b.setAttribute('aria-label',`Play video of ${alt}`);
-        b.append(driveImg(m.id, 1000, '', i<2), el('span','play'));
-        b.onclick = () => {
-          const f = el('iframe'); f.src = `https://drive.google.com/file/d/${encodeURIComponent(m.id)}/preview`;
-          f.allow = 'autoplay; fullscreen'; f.allowFullscreen = true; f.title = `Video of ${alt}`;
-          b.replaceWith(f);
-        };
-        s.append(b);
-      }
+      else s.append(videoBtn(m, alt));
       strip.append(s);
     });
     const count = el('span','count', `1 / ${media.length}`);
@@ -614,6 +677,74 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       g.append(prev, next);
     }
     return g;
+  }
+
+  // ---- Individual corms in a lot: one line each, with its photo, sub-SKU and status ----
+  function unitsList(c){
+    const w = el('section','lotsec');
+    const h = el('h4', null, 'Corms'); h.append(el('small', null, `${c.units.length} in this lot`)); w.append(h);
+    const box = el('div','units');
+    const rank = {available:0, auction:1, hold:2, nfs:3};
+    c.units.slice().sort((a,b) => (rank[a.status]??9) - (rank[b.status]??9) || a.id.localeCompare(b.id, undefined, {numeric:true})).forEach(u => {
+      const x = Object.assign({}, u, {lot:c.lot, item:c.item, var:c.var});
+      const r = el('div','unit');
+      const pic = el('button','pic' + (u.photo ? '' : ' none')); pic.type = 'button';
+      if(u.photo){
+        const im = driveImg(u.photo, 200, ''); im.addEventListener('gone', () => { im.replaceWith(swatch(c.var || c.item)); pic.classList.add('none'); });
+        pic.append(im); pic.setAttribute('aria-label', `See the photo of corm ${u.id}`); pic.onclick = () => viewer([{k:'photo', id:u.photo}], 0, `Corm ${u.id} · ${c.item}`);
+      } else { pic.append(swatch(c.var || c.item)); pic.disabled = true; pic.setAttribute('aria-label', 'No photo yet'); }
+      r.append(pic, el('span','t', u.id), pill(u.status));
+      if(canAdd(x)) r.append(addBtn('unit', x));
+      else if(u.status === 'auction' && /^https:\/\//.test(u.link || '')){ const a = el('a','auclink','View auction'); a.href = u.link; a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('aria-label', `View the auction for corm ${u.id}`); r.append(a); }
+      else r.append(el('span'));
+      box.append(r);
+    });
+    w.append(box);
+    w.append(el('p','note', 'Tap + to add a single corm to your inquiry list. Auction corms link to their auction.'));
+    return w;
+  }
+
+  // ---- Full-screen viewer: swipe through photos; videos play here (no trip to Google Drive) ----
+  function videoBtn(m, alt){
+    const b = el('button','vid'); b.type='button'; b.setAttribute('aria-label',`Play video of ${alt}`);
+    b.append(driveImg(m.id, 1000, ''), el('span','play'));
+    b.onclick = () => {
+      const f = el('iframe'); f.src = `https://drive.google.com/file/d/${encodeURIComponent(m.id)}/preview`;
+      f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');   // plays inline; Drive's pop-out can't leave the catalog
+      f.allow = 'autoplay; fullscreen'; f.allowFullscreen = true; f.title = `Video of ${alt}`;
+      b.replaceWith(f);
+    };
+    return b;
+  }
+  function viewer(media, start, alt){
+    const prev = document.activeElement;
+    const w = el('div','viewer'); w.setAttribute('role','dialog'); w.setAttribute('aria-modal','true'); w.setAttribute('aria-label', `Photos of ${alt}`);
+    const top = el('div','vbar'); const count = el('span','vcount'); const x = el('button','vclose','\u00d7'); x.type='button'; x.setAttribute('aria-label','Close photos');
+    top.append(el('span','vtitle', alt || ''), count, x);
+    const strip = el('div','vstrip');
+    media.forEach((m, i) => {
+      const sl = el('div','vslide');
+      if(m.k==='photo'){ const im = driveImg(m.id, 1600, `${alt}, photo ${i+1}`, Math.abs(i-start) < 2); im.addEventListener('gone', () => im.replaceWith(el('span','note','This photo couldn\u2019t load right now.'))); sl.append(im); }
+      else sl.append(videoBtn(m, alt));
+      strip.append(sl);
+    });
+    const go = d => strip.scrollBy({left:d*strip.clientWidth, behavior:'smooth'});
+    const pb = el('button','vnav vprev','\u2039'), nb = el('button','vnav vnext','\u203a'); pb.type = nb.type = 'button';
+    pb.setAttribute('aria-label','Previous'); nb.setAttribute('aria-label','Next'); pb.onclick = () => go(-1); nb.onclick = () => go(1);
+    let cur = -1;
+    const upd = () => {
+      const i = Math.min(media.length-1, Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth)));
+      count.textContent = `${i+1} / ${media.length}`;
+      if(i === cur) return; cur = i;
+      [...strip.children].forEach((sl, j) => { if(j !== i && sl.querySelector('iframe')) sl.replaceChildren(videoBtn(media[j], alt)); });   // swiping away stops a video
+    };
+    strip.addEventListener('scroll', upd, {passive:true});
+    const close = () => { w.remove(); document.removeEventListener('keydown', key, true); if(prev && prev.focus) prev.focus(); };
+    const key = e => { if(e.key==='Escape'){ e.stopPropagation(); close(); } else if(e.key==='ArrowRight') go(1); else if(e.key==='ArrowLeft') go(-1); };
+    x.onclick = close; document.addEventListener('keydown', key, true);
+    w.append(top, strip); if(media.length > 1) w.append(pb, nb);
+    document.body.append(w);
+    requestAnimationFrame(() => { strip.scrollLeft = start * strip.clientWidth; upd(); x.focus(); });
   }
 
   // ---- Detail sheet ----
@@ -638,6 +769,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       : [['Status',STATUS[x.status]],['Quantity',x.qty?`${x.qty} corm${x.qty===1?'':'s'}`:''],['Var-type',x.var],['Cultivar',x.cultivar],['Harvested',x.harvest]];
     rows.filter(r=>r[1]).forEach(([k,v])=>{ const d=el('div'); d.append(el('dt',null,k), el('dd',null,v)); dl.append(d); });
     s.append(dl);
+    if(kind==='corm' && x.units && x.units.length) s.append(unitsList(x));
     const par = parentOf(x);
     if(par){
       const pb = el('button','parentbox'); pb.type = 'button';
@@ -656,7 +788,6 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       add.onclick = () => { toggleItem(kind, x); paint(); };
       paint(); actions.append(add);
     }
-    if(x.album){ const a=el('a','btn ghost','View photos'); a.href=x.album; a.target='_blank'; a.rel='noopener'; actions.append(a); }
     const askBtn = el('button','btn ghost','Ask about just this '+(kind==='plant'?'plant':'lot')); askBtn.type='button';
     actions.append(askBtn);
     s.append(actions);
@@ -695,9 +826,10 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
   // Inquiry lines: "[0011] - Chantrieri Pink"; corm lots are marked so they don't clash with plant numbers.
   function itemLine(i){
     const r = resolve(i);
-    if(!r) return `[${i.k[0]==='p' ? '' : 'Corm '}${i.k.slice(2)}]`;
+    if(!r) return `[${i.k[0]==='p' ? '' : 'Corm '}${i.k.slice(2)}]`;   // no longer listed
     const {kind, x} = r;
-    if(kind==='soon') return `[Coming soon] ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}`;
+    if(kind==='soon') return `[Coming soon] ${x.cultivar}${x.var?' '+x.var:''}${x.stage?' ('+x.stage+')':''}${x.ref?' · '+x.ref:''}`;
+    if(kind==='unit') return `[Corm ${x.id}] - ${x.item} (lot ${x.lot})`;
     return kind==='plant'
       ? `[${x.sku}] - ${x.cultivar}${x.var?' '+x.var:''}`
       : `[Corm ${x.lot}] - ${x.item}${x.qty>1 ? ` × ${Math.min(i.qty||1, x.qty)}` : ''}`;
@@ -795,7 +927,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
       e.preventDefault();
       if(!validate(true)) return;
       const CFGx = window.CATALOG_CONFIG || {};
-      const waitlist = picks.map(resolve).filter(r => r && r.kind==='soon').map(r => ({cultivar:r.x.cultivar, var:r.x.var, stage:r.x.stage}));
+      const waitlist = picks.map(resolve).filter(r => r && r.kind==='soon').map(r => ({cultivar:r.x.cultivar, var:r.x.var, stage:r.x.stage, ref:r.x.ref || ''}));
       const payload = {name: name.value.trim(), contact: contact(), items: picks.map(itemLine), message: msg.value.trim(), website: trap.value, page: 'catalog', waitlist};
       send.disabled = true; send.textContent = 'Sending…';
       fetch(CFGx.FEED_URL, {method:'POST', body: JSON.stringify(payload)})
@@ -913,7 +1045,7 @@ body:has(.scrim:not([hidden])) .listbar{display:none}
     const live = el('span', 'live' + (fromCache ? ' stale' : ''), fromCache ? 'Updating…' : 'Live · updated ' + fmtTime(d.updated));
     u.append(live);
     $('#n-plants').textContent = d.plants.filter(p=>p.status==='available').length;
-    $('#n-corms').textContent = d.corms.filter(c=>c.status==='available').reduce((s,c)=>s+c.qty,0);
+    $('#n-corms').textContent = cormsAvailable(d.corms);
     renderChips();
     // Don't redraw underneath an open detail sheet; the next render picks up changes.
     if(first || scrim.hidden) render();
